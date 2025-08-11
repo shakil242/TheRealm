@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo1 from "../assets/home-images/1.png";
 import logo2 from "../assets/home-images/2.png";
@@ -84,7 +84,6 @@ const Navbar = () => {
     setExpandedSubmenus(newExpanded);
   };
 
-  // Close mobile menu and reset expanded submenus
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
     setExpandedSubmenus(new Set());
@@ -95,31 +94,45 @@ const Navbar = () => {
     e.preventDefault();
     setAuthModalOpen(true);
   };
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth > 1024);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth > 1024);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Clean up the event listener on unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <>
       <header className="bg-black text-white shadow-md w-full py-3.5">
         <div className="bg-black max-w-7xl mx-auto px-4 sm:px-8 flex items-center h-16 font-bold font-mono justify-between">
           <div className="flex items-center justify-between max-w-1/4">
             <Link to="/" className="flex items-center select-none">
-              <img
-                src={logo1}
-                alt="The Realm VM Logo"
-                className="h-12 hidden lg:block w-96"
-              />
-              <div className="rounded-full border-2 border-white flex items-center justify-center w-12 h-12">
+              {isLargeScreen ? (
                 <img
-                  src={logo2}
+                  src={logo1}
                   alt="The Realm VM Logo"
-                  className="h-8 w-8 object-contain"
+                  className="h-12 w-96"
                 />
-              </div>
+              ) : (
+                <div className="rounded-full border-2 border-white flex items-center justify-center w-12 h-12">
+                  <img
+                    src={logo2}
+                    alt="The Realm VM Logo"
+                    className="h-8 w-8 object-contain"
+                  />
+                </div>
+              )}
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex max-w-3/4 items-center space-x-6 whitespace-nowrap">
-            <nav className="flex items-center space-x-6">
+          <div className="hidden lg:flex max-w-3/4 items-center whitespace-nowrap justify-items-end">
+            <nav className="grid grid-flow-col items-center space-x-6">
               {navItems.map((item, index) => (
                 <div key={index} className="relative group">
                   <Link
@@ -152,7 +165,7 @@ const Navbar = () => {
             </nav>
 
             {/* Desktop Icons */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center">
               {/* Profile Icon */}
               <button
                 onClick={handleProfileClick}
@@ -398,20 +411,21 @@ const Navbar = () => {
                   </div>
 
                   {/* Mobile Submenu */}
-                  {item.submenu.length > 0 && expandedSubmenus.has(item.name) && (
-                    <div className="pl-4 pb-4 space-y-2">
-                      {item.submenu.map((subItem, subIndex) => (
-                        <Link
-                          key={subIndex}
-                          to={subItem.path}
-                          className="block py-2 text-base text-gray-300 hover:text-yellow-400 transition-colors"
-                          onClick={closeMobileMenu}
-                        >
-                          {subItem.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                  {item.submenu.length > 0 &&
+                    expandedSubmenus.has(item.name) && (
+                      <div className="pl-4 pb-4 space-y-2">
+                        {item.submenu.map((subItem, subIndex) => (
+                          <Link
+                            key={subIndex}
+                            to={subItem.path}
+                            className="block py-2 text-base text-gray-300 hover:text-yellow-400 transition-colors"
+                            onClick={closeMobileMenu}
+                          >
+                            {subItem.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                 </div>
               ))}
             </nav>
@@ -482,9 +496,9 @@ const Navbar = () => {
       </header>
 
       {/* Authentication Modal */}
-      <Authentication 
-        isOpen={authModalOpen} 
-        onClose={() => setAuthModalOpen(false)} 
+      <Authentication
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
       />
     </>
   );
