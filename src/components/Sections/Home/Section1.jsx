@@ -45,7 +45,7 @@ function Section1() {
           <h1 className="text-3xl lg:text-4xl font-bold">
             GET STARTED WITH FRACTIONAL OWNERSHIP OF <br /> THE REALM™
           </h1>
-          <button className="bg-sky-700 hover:bg-sky-800 cursor-pointer text-white py-2 px-10 text-[15px] transition duration-300">
+          <button className="bg-[#5192C4] hover:bg-sky-700 cursor-pointer text-white py-2 px-10 text-[15px] transition duration-300">
             Learn More
           </button>
           <h1 className="md:text-5xl lg:text-8xl font-bold  text-sky-700">
@@ -86,7 +86,7 @@ function Section1() {
             Buy, Sell, Auction and Store Your NFT Land Titles on Your Apex NFT
             Crypto Card.
           </p>
-          <button className="mt-8 bg-sky-700 hover:bg-sky-800 text-white py-2 px-10 text-[15px]">
+          <button className="mt-8 bg-[#5192C4] hover:bg-sky-700 cursor-pointer text-white py-2 px-10 text-[15px]">
             Early Member Sign Up
           </button>
         </div>

@@ -8,41 +8,36 @@ import img6 from "../../../assets/home-images/07.webp";
 
 function Section2() {
   const [slideIndex, setSlideIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
+  const [imagesPerSlide, setImagesPerSlide] = useState(2);
 
-  const slides = [
-    [img1, img2, img3, img4],
-    [img3, img4, img5, img6],
-  ];
+  const allImages = [img1, img2, img3, img4, img1, img2, img5, img6];
+
+  // Adjust images per slide based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setImagesPerSlide(1);
+      } else {
+        setImagesPerSlide(4);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Split images into slides
+  const slides = [];
+  for (let i = 0; i < allImages.length; i += imagesPerSlide) {
+    slides.push(allImages.slice(i, i + imagesPerSlide));
+  }
 
   const nextSlide = () => {
-    setSlideIndex((prevIndex) =>
-      prevIndex === slides.length - 1 ? 0 : prevIndex + 1
-    );
+    setSlideIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   };
 
   const prevSlide = () => {
-    setSlideIndex((prevIndex) =>
-      prevIndex === 0 ? slides.length - 1 : prevIndex - 1
-    );
-  };
-
-  // Touch handling for mobile swipe
-  const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 100) {
-      nextSlide();
-    } else if (touchStart - touchEnd < -100) {
-      prevSlide();
-    }
+    setSlideIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
   return (
@@ -51,9 +46,6 @@ function Section2() {
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${slideIndex * 100}%)` }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         {slides.map((slide, index) => (
           <div key={index} className="flex-shrink-0 w-full">
@@ -63,7 +55,7 @@ function Section2() {
                   key={imgIndex}
                   src={img}
                   alt={`Slide ${index + 1}`}
-                  className="w-full sm:w-1/2 md:w-1/4 p-2 object-cover h-64"
+                  className="w-full sm:w-1/2 md:w-1/4 p-2 object-contain h-70"
                 />
               ))}
             </div>
