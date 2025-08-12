@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo1 from "../assets/home-images/1.png";
 import logo2 from "../assets/home-images/2.png";
 import Authentication from "./Authentication";
@@ -10,6 +10,8 @@ const Navbar = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [expandedSubmenus, setExpandedSubmenus] = useState(new Set());
   const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const location = useLocation();
 
   // Navigation data
   const navItems = [
@@ -102,8 +104,6 @@ const Navbar = () => {
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Clean up the event listener on unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   return (
@@ -138,7 +138,7 @@ const Navbar = () => {
                   <Link
                     to={item.path}
                     className={`transition-colors duration-300 text-[17px] font-medium font-sans tracking-wide flex items-center ${
-                      item.name === "Home"
+                      location.pathname === item.path
                         ? "text-purple-500"
                         : "text-white hover:text-purple-400"
                     }`}

@@ -3,9 +3,9 @@ import React from "react";
 
 function Section10() {
   return (
-    <div className="relative max-w-full mx-auto my-8 overflow-hidden">
+    <div className="relative max-w-full mx-auto overflow-hidden">
       <div
-        className="flex whitespace-nowrap my-8"
+        className="flex whitespace-nowrap my-8 text-[17px]"
         style={{ animation: "marquee 20s linear infinite" }}
       >
         <h1 className="inline-block text-[10vw] md:text-[170px] font-bold uppercase leading-none text-[#7A4FF4] px-4 tracking-tight">

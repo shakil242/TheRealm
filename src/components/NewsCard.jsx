@@ -2,16 +2,16 @@ import React from "react";
 
 function NewsCard({ title, date, categories, image, source }) {
   return (
-    <div className="flex-1 min-w-[300px] bg-cyan-950 shadow-lg rounded-lg overflow-hidden cursor-pointer">
-      <div className="relative h-64 md:h-80">
+    <div className="flex-1 min-w-[300px] bg-[#14141d] shadow-lg rounded-lg overflow-hidden cursor-pointer">
+      <div className="relative">
         <img
           src={image}
           alt={title}
-          className="w-full h-full object-contain hover:scale-0 transition-all duration-200"
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
       </div>
-      <div className="p-6">
-        <div className="text-sm font-semibold text-white mb-2">
+      <div className="p-9">
+        <div className="text-sm text-white mb-2">
           <span className="uppercase text-[#7A4FF4] hover:text-white">
             {source}
           </span>
@@ -24,8 +24,8 @@ function NewsCard({ title, date, categories, image, source }) {
             </span>
           ))}
         </div>
-        <div className="text-sm text-gray-500 mb-4">{date}</div>
-        <h3 className="text-xl font-bold text-white mb-4">{title}</h3>
+        <div className="text-sm text-gray-500 mb-2">{date}</div>
+        <h3 className="text-xl font-bold text-white">{title}</h3>
       </div>
     </div>
   );

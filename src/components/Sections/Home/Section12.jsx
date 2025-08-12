@@ -58,9 +58,9 @@ const articles = [
 
 function Section12() {
   return (
-    <div className="container mx-auto p-4 md:p-8 mt-20">
+    <div className="container mx-auto p-4 md:p-8 mt-20 mb-20">
       <div className="text-center mb-10">
-        <p className="text-[14px] uppercase tracking-widest text-white">
+        <p className="text-[14px] uppercase tracking-widest font-bold text-white">
           OUR NEWS FORUM
         </p>
         <h2 className="text-[37px] font-bold mt-2 text-white">
@@ -68,7 +68,7 @@ function Section12() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-3 md:grid-cols-4 max-w-7xl gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto justify-items-center">
         {articles.map((article, index) => (
           <NewsCard
             key={index}

@@ -17,7 +17,22 @@ function Section8() {
     >
       <div className="max-w-4xl mx-auto text-center">
         <div className="flex justify-center align-middle flex-col md:text-left">
-          <img src={img1} alt="bed" className="w-2xl h-2xl self-center mt-24" />
+          <img
+            src={img1}
+            alt="therealm"
+            className="w-2xl h-2xl self-center mt-24"
+          />
+          {/* Vimeo Responsive Embed */}
+          <div className="relative w-full pt-[56.25%] mt-6 rounded-lg overflow-hidden shadow-lg">
+            <iframe
+              src="https://player.vimeo.com/video/1091440424?autoplay=1&playsinline=1&color&autopause=0&loop=0&muted=0&title=1&portrait=1&byline=1#t="
+              className="absolute top-0 left-0 w-full h-full"
+              frameBorder="0"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              title="The Realm Video"
+            ></iframe>
+          </div>
         </div>
         <div className="text-center text-white mt-10 text-[14px] font-bold">
           <h6 className="mb-6">AN ENDLESS WORLD</h6>

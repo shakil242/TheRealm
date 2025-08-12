@@ -110,7 +110,7 @@ function Section9() {
                 <p className="mb-6 text-[17px">
                   {slideData[current].description}
                 </p>
-                <button className="border-2 py-3 px-8 border-white font-bold bg-[#7C51BE] hover:bg-transparent transition-all duration-500">
+                <button className="border-2 py-2 px-7 border-white text-[15px] bg-[#774db5] hover:bg-transparent transition-all duration-500">
                   {slideData[current].status}
                 </button>
               </motion.div>
