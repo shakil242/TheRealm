@@ -6,7 +6,7 @@ import sec3 from "../../../assets/home-images/30.png";
 
 function Section1() {
   return (
-    <div className="bg-black text-white mt-10 px-4 sm:px-6 lg:px-8 justify-center alicn-items-center my-2">
+    <div className="bg-black text-white mt-20 px-4 sm:px-6 lg:px-8 justify-center alicn-items-center my-2">
       {/* First Section */}
       <div className="max-w-6xl mx-auto text-center mb-16">
         <div className="flex justify-center">
