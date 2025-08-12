@@ -108,8 +108,8 @@ const Navbar = () => {
   }, []);
   return (
     <>
-      <header className="bg-black text-white shadow-md w-full py-3.5">
-        <div className="bg-black max-w-7xl mx-auto px-4 sm:px-8 flex items-center h-16 font-bold font-mono justify-between">
+      <header className="bg-black text-white shadow-md w-full py-3.5 fixed top-0 z-50 ">
+        <div className="bg-black max-w-7xl mx-auto px-4 sm:px-8 flex items-center h-16 font-bold font-mono justify-between sticky top-0 z-50">
           <div className="flex items-center justify-between max-w-1/4">
             <Link to="/" className="flex items-center select-none">
               {isLargeScreen ? (
