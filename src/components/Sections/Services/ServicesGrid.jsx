@@ -64,7 +64,7 @@ const ServicesGrid = () => {
            <img
   src={service.img}
   alt={service.title}
-  className="w-full h-[16rem] lg:h-[24rem]   object-cover brightness-70"
+  className="w-full h-[16rem] lg:h-[20rem]   object-cover brightness-70"
 />
 
             <div className="absolute inset-0 group-hover:bg-black/60 transition-all duration-500"></div>
