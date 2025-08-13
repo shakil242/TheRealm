@@ -61,13 +61,14 @@ const ServicesGrid = () => {
             href={service.link}
             className="relative group overflow-hidden shadow-lg"
           >
-            <img
-              src={service.img}
-              alt={service.title}
-              className="w-full h-[28rem] object-cover brightness-70"
-            />
+           <img
+  src={service.img}
+  alt={service.title}
+  className="w-full h-[16rem] lg:h-[24rem]   object-cover brightness-70"
+/>
+
             <div className="absolute inset-0 group-hover:bg-black/60 transition-all duration-500"></div>
-            <div className="absolute inset-0 mt-[230px] bg-opacity-40 flex flex-col items-center justify-center p-4">
+            <div className="absolute inset-0 mt-[90px] bg-opacity-40 flex flex-col items-center justify-center p-4">
               <span className="text-7xl font-bold">{service.id}</span>
               <h4 className="text-2xl font-bold mt-2 text-center">{service.title}</h4>
               <p className="text-lg">{service.category}</p>

@@ -1,10 +1,14 @@
 import React from "react";
+import HeroSection from "../components/Sections/Enter the Realm/HeroSection";
+import Section1 from "../components/Sections/Enter the Realm/Section1";
+import Section2 from "../components/Sections/Enter the Realm/Section2";
 
 const EnterTheRealm = () => {
   return (
-    <div className="page-container">
-      <h1>EnterTheRealm Page</h1>
-      {/* Page content will go here */}
+    <div>
+      <HeroSection />
+      <Section1 />
+      <Section2 />
     </div>
   );
 };

@@ -9,10 +9,16 @@ import Section7 from "../components/Sections/Home/Section7";
 import Section8 from "../components/Sections/Home/Section8";
 import Section9 from "../components/Sections/Home/Section9";
 import Section10 from "../components/Sections/Home/Section10";
+import Section11 from "../components/Sections/Home/Section11";
+import Section12 from "../components/Sections/Home/Section12";
+import Section13 from "../components/Sections/Home/Section13";
+import Section14 from "../components/Sections/Home/Section14";
+import HeroSection from "../components/Sections/Home/HeroSection";
 
 const Home = () => {
   return (
     <div>
+      <HeroSection />
       <Section1 />
       <Section2 />
       <Section3 />
@@ -23,6 +29,10 @@ const Home = () => {
       <Section8 />
       <Section9 />
       <Section10 />
+      <Section11 />
+      <Section12 />
+      <Section13 />
+      <Section14 />
     </div>
   );
 };

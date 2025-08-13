@@ -7,10 +7,10 @@ function Section5() {
         className="flex whitespace-nowrap"
         style={{ animation: "marquee 10s linear infinite" }}
       >
-        <h1 className="inline-block text-[10vw] md:text-[170px] font-bold uppercase leading-none text-sky-600 px-4 tracking-tight">
+        <h1 className="inline-block text-[10vw] md:text-[170px] font-bold uppercase leading-none text-[#5192c4] px-4 tracking-tight">
           Community the First V Community the First V
         </h1>
-        <h1 className="inline-block text-[10vw] md:text-[170px] font-bold uppercase leading-none text-sky-600 px-4 tracking-tight">
+        <h1 className="inline-block text-[10vw] md:text-[170px] font-bold uppercase leading-none text-[#5192c4] px-4 tracking-tight">
           Community the First V Community the First V
         </h1>
       </div>
