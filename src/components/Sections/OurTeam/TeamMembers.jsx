@@ -89,6 +89,7 @@ export default function Team() {
     name: 'DAN HUGHES',
     title: 'Creative Director',
     image: team1
+    
   };
 
   
