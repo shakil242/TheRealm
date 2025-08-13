@@ -1,10 +1,14 @@
 import React from "react";
+import MainImage from "../components/Sections/OurTeam/MainImage";
+import Team from "../components/Sections/OurTeam/TeamMembers";
+import PopularArticles from "../components/Sections/OurTeam/PopularArticles";
 
 const OurTeam = () => {
   return (
-    <div className="page-container">
-      <h1>OurTeam Page</h1>
-      {/* Page content will go here */}
+    <div className="page-container ">
+     <MainImage/>
+     <Team/>
+     <PopularArticles/>
     </div>
   );
 };

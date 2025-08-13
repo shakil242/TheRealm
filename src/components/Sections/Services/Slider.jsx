@@ -9,75 +9,53 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 
 export default function Slider() {
- const testimonials = [
-    {
-      quote:
-        "The Realm is fantastic! I hope to see more social interaction like online meeting and possibly dating. It would be so cool to meet someone face to face in The Realm and get to know them by exploring it with them.",
-      name: "Natalie Jones",
-      title: "Social Media Influencer",
-      rating: 5,
-    },
-    {
-      quote:
-        "The Realm is fantastic! I hope to see more social interaction like online meeting and possibly dating. It would be so cool to meet someone face to face in The Realm .",
-      name: "Natalie Jones",
-      title: "Social Media Influencer",
-      rating: 5,
-    },
-    {
-      quote:
-        "I’m in Belfast Ireland and my friend sent me your link. I just bought my commercial Land Title on Hyperion Island,.",
-      name: "Sonya O’Neil",
-      title: "Retail Store Owner",
-      rating: 4,
-    },
-    {
-      quote:
-        "The Realm looks amazing and has so many opportunities for businesses to engage with millions of others online.!",
-      name: "Nicholas Jennings",
-      title: "Game Developer",
-      rating: 5,
-    },
-    {
-      quote:
-        "I’m in Belfast Ireland and my friend sent me your link. I just bought my commercial Land Title on Hyperion Island, so cool! I also just registered for an Apex NFT Gold Card with Fanbase.",
-      name: "Sonya O’Neil",
-      title: "Retail Store Owner",
-      rating: 4,
-    },
-    {
-      quote: "The Hyper Realm looks breathtaking! If you're a developer, I'm waiting for you!",
-      name: "Matthew Porter",
-      title: "Gamer | 3D Artist",
-      rating: 5,
-    },
-    {
-      quote: "The Hyper Realm looks breathtaking! If you're a developer, I'm waiting for you!",
-      name: "Matthew Porter",
-      title: "Gamer | 3D Artist",
-      rating: 5,
-    },
-    {
-      quote: "The Hyper Realm looks breathtaking! If you're a developer, I'm waiting for you!",
-      name: "Matthew Porter",
-      title: "Gamer | 3D Artist",
-      rating: 5,
-    },
-    {
-      quote:
-        "I’m in Belfast Ireland and my friend sent me your link. I just bought my commercial Land Title on Hyperion Island, so cool! I also just registered for an Apex NFT Gold Card with Fanbase.",
-      name: "Sonya O’Neil",
-      title: "Retail Store Owner",
-      rating: 4,
-    },
-  ];
+const testimonials = [
+  {
+    quote:
+      "The Realm is fantastic! I hope to see more social interaction like online meeting and possibly dating. It would be so cool to meet someone face to face in The Realm and get to know them by exploring it with them.",
+    name: "Natalie Jones",
+    title: "Social Media Influencer",
+    rating: 5,
+  },
+  {
+    quote:
+      "The Realm is fantastic! I hope to see more social interaction like online meeting and possibly dating. It would be so cool to meet someone face to face in The Realm .",
+    name: "Natalie Jones",
+    title: "Social Media Influencer",
+    rating: 5,
+  },
+
+  {
+    quote:
+      "The Realm looks amazing and has so many opportunities for businesses to engage with millions of others online.!",
+    name: "Nicholas Jennings",
+    title: "Game Developer",
+    rating: 5,
+  },
+ 
+
+
+  {
+    quote: "The Hyper Realm looks breathtaking! If you're a developer, I'm waiting for you!",
+    name: "Matthew Porter",
+    title: "Gamer | 3D Artist",
+    rating: 5,
+  },
+  {
+    quote:
+      "I’m in Belfast Ireland and my friend sent me your link. I just bought my commercial Land Title on Hyperion Island, so cool! I also just registered for an Apex NFT Gold Card with Fanbase.",
+    name: "Sonya O’Neil",
+    title: "Retail Store Owner",
+    rating: 4,
+  },
+];
 
   const StarRating = ({ rating }) => (
     <div className="flex space-x-1 mt-2">
       {[...Array(5)].map((_, i) => (
         <svg
           key={i}
-          className={`h-4 w-4 ${i < rating ? "text-[#6434eb]" : "text-gray-600"}`}
+          className={`h-5 w-5 ${i < rating ? "text-[#6434eb]" : "text-gray-600"}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -90,7 +68,7 @@ export default function Slider() {
   return (
     <div className="bg-black text-white min-h-screen font-sans px-4 sm:px-8 md:px-16 lg:px-24 py-8">
       {/* Header Section */}
-      <header className="text-center mb-12 max-w-7xl mx-auto">
+      <header className="text-center mb-12 w-full mx-auto">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.353rem] font-bold mb-5 sm:mb-7 tracking-wide leading-tight">
           EARLY ADOPTION AND TESTIMONIALS
         </h1>
@@ -112,7 +90,7 @@ export default function Slider() {
         pagination={{ clickable: true }}
         spaceBetween={32}
         slidesPerView={"auto"}
-        speed={1500}
+        speed={900}
         loop={true}
         centeredSlides={false}
         className="pb-12"
@@ -140,7 +118,7 @@ export default function Slider() {
           <SwiperSlide
             key={index}
             
-           className="!flex-shrink-0 mb-8 max-w-[380px] sm:max-w-[350px] md:max-w-[400px]"
+           className="!flex-shrink-0 lg:mb-18 mb-10 max-w-[380px] sm:max-w-[350px] md:max-w-[400px]"
 
           >
             <div className="p-6 sm:p-8 bg-[#14141d] shadow-lg transition-transform h-full flex flex-col">
@@ -166,8 +144,8 @@ export default function Slider() {
           text-align: center;
         }
         .swiper-pagination-bullet {
-          width: 12px;
-          height: 12px;
+          width: 10px;
+          height: 10px;
           background: transparent;
           border: 2px solid #888888;
           margin: 0 6px !important;

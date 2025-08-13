@@ -108,7 +108,7 @@ const Navbar = () => {
   }, []);
   return (
     <>
-      <header className="bg-black text-white shadow-md w-full py-3.5">
+      <header className="bg-black text-white shadow-md w-full py-3.5 ">
         <div className="bg-black max-w-7xl mx-auto px-4 sm:px-8 flex items-center h-16 font-bold font-mono justify-between">
           <div className="flex items-center justify-between max-w-1/4">
             <Link to="/" className="flex items-center select-none">
