@@ -14,12 +14,12 @@ export default function MainImage() {
   }, []);
 
   return (
-    <div className="relative w-full font-sans ">
+    <div className="relative w-full font-sans  mt-18 ">
       {/* Background Image */}
       <img
         src={OurTeamCover}
         alt="Our Team Cover"
-        className="w-full h-auto max-h-[95vh] object-cover"
+        className="w-full h-auto max-h-[100vh] object-cover"
       />
 
       {/* Logo */}
@@ -27,7 +27,7 @@ export default function MainImage() {
         src={logo2}
         alt="Logo"
         className={`
-          absolute w-[82%] bottom-30 md:bottom-35 lg:bottom-11 
+          absolute w-[82%] bottom-30  lg:bottom-10 
           left-1/2 transform -translate-x-1/2 -translate-y-1/2 
           shadow-b-xl transition-all duration-1500 
           ${showLogo ? "opacity-100" : "opacity-0"}
@@ -37,7 +37,7 @@ export default function MainImage() {
       {/* Text */}
       <div
         className={`
-          hidden lg:block absolute bottom-37 left-1/2 -translate-x-1/2 text-center 
+          hidden lg:block absolute bottom-27 left-1/2 -translate-x-1/2 text-center 
           uppercase font-semibold text-white text-xs md:text-sm leading-tight 
           tracking-[1.00521px] px-4 sm:px-0 max-w-[90%] 
           [text-shadow:3.5px_3.5px_5px_rgba(0,0,0,0.75)]

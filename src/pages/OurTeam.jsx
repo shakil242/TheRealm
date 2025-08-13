@@ -5,7 +5,7 @@ import PopularArticles from "../components/Sections/OurTeam/PopularArticles";
 
 const OurTeam = () => {
   return (
-    <div className="page-container ">
+    <div className="page-container  ">
      <MainImage/>
      <Team/>
      <PopularArticles/>

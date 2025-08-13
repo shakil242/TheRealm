@@ -32,7 +32,7 @@ const ComingSoonSection = () => {
             <img src={apexIcon} alt="Apex Icon" className="w-[70%] md:w-[60%] lg:w-[40%]" />
           </div>
           <div className="flex justify-center ">
-            <button className="px-6 py-2 bg-[#1598D8] cursor-pointer hover:bg-[#348ff7] transform transition-all duration-300">Click Here</button>
+            <button className="px-6 py-2 bg-[#1598D8]">Click Here</button>
           </div>
         </div>
       </div>
@@ -67,44 +67,40 @@ const ComingSoonSection = () => {
           </ul>
         </div>
 
-   <div className="space-y-4 lg:ml-[-80px] mt-10 lg:px-0">
-  <a href="#" className="border-b block group">
-    <div className="w-full flex justify-between items-center text-left font-bold uppercase">
-      <span className="text-xl md:text-3xl text-[#1ba9ed] group-hover:text-gray-400 transition-colors duration-300">
-        BRAODWALK ISLAND{" "}
-        <span className="text-gray-300 text-sm">/ ADVERTISEMENT</span>
-      </span>
-      <HiPlus className="size-8 text-[#2CAED9] group-hover:text-[#7a4ff4] transition-colors duration-300" />
-    </div>
-    <div className="mt-4"></div>
-  </a>
+        <div className="space-y-4 lg:ml-[-80px] mt-10 lg:px-0">
+          <div className="border-b">
+            <div className="w-full flex justify-between items-center text-left font-bold uppercase">
+              <span className="text-xl md:text-3xl text-[#1ba9ed]">
+                BRAODWALK ISLAND <span className="text-gray-300 text-sm">/ ADVERTISEMENT</span>
+              </span>
+              <HiPlus className="size-8 text-[#2CAED9]" />
+            </div>
+            <div className="mt-4"></div>
+          </div>
 
-  <a href="#" className="border-b block group">
-    <div className="w-full flex justify-between items-center text-left font-bold uppercase">
-      <span className="text-xl md:text-3xl text-[#1ba9ed] group-hover:text-gray-400 transition-colors duration-300">
-        COMEMERCE CENTER{" "}
-        <span className="text-gray-300 text-sm">/ ADVERTISEMENT</span>
-      </span>
-      <HiPlus className="size-8 text-[#2CAED9] group-hover:text-[#7a4ff4] transition-colors duration-300" />
-    </div>
-    <div className="mt-4"></div>
-  </a>
+          <div className="border-b">
+            <div className="w-full flex justify-between items-center text-left font-bold uppercase">
+              <span className="text-xl md:text-3xl text-[#1ba9ed]">
+                COMEMERCE CENTER <span className="text-gray-300 text-sm">/ ADVERTISEMENT</span>
+              </span>
+              <HiPlus className="size-8 text-[#2CAED9]" />
+            </div>
+            <div className="mt-4"></div>
+          </div>
 
-  <a href="#" className="border-b block group">
-    <div className="w-full flex justify-between items-center text-left font-bold uppercase">
-      <span className="text-xl md:text-3xl text-[#1ba9ed] group-hover:text-gray-400 transition-colors duration-300">
-        GRAND ISLAND{" "}
-        <span className="text-gray-300 text-sm">
-          / <br className="block md:hidden" /> ADVERTISEMENT
-        </span>
-      </span>
-      <HiPlus className="size-8 text-[#2CAED9] group-hover:text-[#7a4ff4] transition-colors duration-300" />
-    </div>
-    <div className="mt-4"></div>
-  </a>
-</div>
-
-
+          <div className="border-b">
+            <div className="w-full flex justify-between items-center text-left font-bold uppercase">
+              <span className="text-xl md:text-3xl text-[#1ba9ed]">
+                GRAND ISLAND{" "}
+                <span className="text-gray-300 text-sm">
+                  / <br className="block md:hidden" /> ADVERTISEMENT
+                </span>
+              </span>
+              <HiPlus className="size-8 text-[#2CAED9]" />
+            </div>
+            <div className="mt-4"></div>
+          </div>
+        </div>
       </div>
     </div>
   );

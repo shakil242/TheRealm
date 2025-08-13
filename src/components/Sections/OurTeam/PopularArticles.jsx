@@ -57,7 +57,7 @@ export default function PopularArticles() {
         </div>
 
         <div className="flex justify-center mt-16">
-          <button className="bg-[#0C83DD] text-white text-sm py-3 px-6 cursor-pointer rounded">
+          <button className="bg-[#0C83DD] text-white text-base py-4 px-10 cursor-pointer rounded">
             More News
           </button>
         </div>

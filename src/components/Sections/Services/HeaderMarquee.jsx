@@ -3,7 +3,7 @@ import React from "react";
 
 const HeaderMarquee = () => {
   return (
-    <header className=" px-2 sm:px-12 overflow-hidden relative">
+    <header className="pt-10 px-2 sm:px-12 overflow-hidden relative">
       <div
         className="flex whitespace-nowrap"
         style={{

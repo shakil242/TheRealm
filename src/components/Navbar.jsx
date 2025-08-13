@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo1 from "../assets/home-images/1.png";
 import logo2 from "../assets/home-images/2.png";
 import Authentication from "./Authentication";
@@ -10,6 +10,8 @@ const Navbar = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [expandedSubmenus, setExpandedSubmenus] = useState(new Set());
   const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const location = useLocation();
 
   // Navigation data
   const navItems = [
@@ -102,14 +104,12 @@ const Navbar = () => {
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Clean up the event listener on unmount
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   return (
     <>
-      <header className="bg-black text-white shadow-md w-full py-3.5 ">
-        <div className="bg-black max-w-7xl mx-auto px-4 sm:px-8 flex items-center h-16 font-bold font-mono justify-between">
+      <header className="bg-black text-white shadow-md w-full py-3.5 fixed top-0 z-50 ">
+        <div className="bg-black max-w-7xl mx-auto px-4 sm:px-8 flex items-center h-16 font-bold font-mono justify-between sticky top-0 z-50">
           <div className="flex items-center justify-between max-w-1/4">
             <Link to="/" className="flex items-center select-none">
               {isLargeScreen ? (
@@ -138,7 +138,7 @@ const Navbar = () => {
                   <Link
                     to={item.path}
                     className={`transition-colors duration-300 text-[17px] font-medium font-sans tracking-wide flex items-center ${
-                      item.name === "Home"
+                      location.pathname === item.path
                         ? "text-purple-500"
                         : "text-white hover:text-purple-400"
                     }`}

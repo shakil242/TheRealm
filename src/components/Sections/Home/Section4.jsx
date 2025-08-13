@@ -27,7 +27,7 @@ function Section4() {
           reality.
         </p>
         <div className="flex justify-center">
-          <button className="text-[14px] bg-[#5192C4] hover:bg-sky-700 cursor-pointer text-white py-2 px-11 transition duration-300">
+          <button className="text-[14px] bg-[#5192c4] hover:bg-sky-700 cursor-pointer text-white py-2 px-11 transition duration-300">
             See Location
           </button>
         </div>
