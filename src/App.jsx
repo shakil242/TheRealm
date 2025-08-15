@@ -33,6 +33,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import IslandLocations from "./pages/IslandLocations";
 import TeamSingle from "./components/Sections/OurTeam/TeamSingle";
+import SingleProject from "./components/Sections/OurTeam/SingleProject";
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
             <Route path="/card-services" element={<OurServices />}></Route>
             <Route path="/our-team" element={<OurTeam />}></Route>
             <Route path="/our-team/:memberName" element={<TeamSingle />} />
+            <Route path="/single-project-detail/:projectName" element={<SingleProject/>} />
           
             <Route path="/enter-the-realm" element={<EnterTheRealm />}></Route>
             <Route path="/9-island-vault" element={<NineIslandVault />}></Route>

@@ -1,14 +1,28 @@
-import React, { useState } from "react";
-import { FaFacebookF, FaInstagram } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { FaFacebookF, FaInstagram, FaArrowUp } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import earth from "../assets/home-images/29.png";
 import roundR from "../assets/home-images/2.png";
 import fanbase from "../assets/home-images/18.png";
 import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Footer() {
   const [isHovered, setIsHovered] = useState(false);
   const location = useLocation();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  // Track scroll to toggle button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 200);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="bg-[#000011] text-white py-8 px-4">
@@ -102,6 +116,28 @@ function Footer() {
           Corp. | Alchemy Studios, LLC.
         </p>
       </div>
+      {/* Go to Top Button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 z-50 flex flex-col items-center gap-2 text-white cursor-pointer"
+            whileHover={{
+              scale: 1.1,
+              color: "blue",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <FaArrowUp className="m-4 mb-5" />
+            <span className="text-sm font-medium transform rotate-90 origin-center">
+              Go to Top
+            </span>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

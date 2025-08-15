@@ -102,7 +102,7 @@ function HeroSection() {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative h-screen mt-23 w-full overflow-hidden">
       {/* Background image */}
       <AnimatePresence mode="sync">
         <motion.div
