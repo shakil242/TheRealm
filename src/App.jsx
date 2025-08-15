@@ -32,6 +32,8 @@ import WishlistPage from "./pages/WishlistPage";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import IslandLocations from "./pages/IslandLocations";
+import TeamSingle from "./components/Sections/OurTeam/TeamSingle";
+
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
             <Route path="/contacts" element={<ContactUs />}></Route>
             <Route path="/card-services" element={<OurServices />}></Route>
             <Route path="/our-team" element={<OurTeam />}></Route>
+            <Route path="/our-team/:memberName" element={<TeamSingle />} />
+          
             <Route path="/enter-the-realm" element={<EnterTheRealm />}></Route>
             <Route path="/9-island-vault" element={<NineIslandVault />}></Route>
             <Route
