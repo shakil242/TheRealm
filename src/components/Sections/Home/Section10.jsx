@@ -15,14 +15,10 @@ function Section10() {
           virtual properties in the REALM™
         </h1>
       </div>
-      <style jsx>{`
+      <style>{`
         @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}</style>
     </div>

@@ -7,6 +7,7 @@ import Section4 from "../components/Sections/Enter the Realm/Section4";
 import Section5 from "../components/Sections/Enter the Realm/Section5";
 import Section6 from "../components/Sections/Enter the Realm/Section6";
 import Section7 from "../components/Sections/Enter the Realm/Section7";
+import Section8 from "../components/Sections/Enter the Realm/Section8";
 
 const EnterTheRealm = () => {
   return (
@@ -19,6 +20,7 @@ const EnterTheRealm = () => {
       <Section5 />
       <Section6 />
       <Section7 />
+      <Section8 />
     </div>
   );
 };
