@@ -7,12 +7,12 @@ export default function SingleBiography() {
       <div className="max-w-5xl mx-auto">
         
         {/* Heading */}
-        <h2 className="text-3xl lg:text-4xl font-bold uppercase mb-8">
+        <h2 className="text-2xl lg:text-4xl font-bold uppercase mb-8">
           Biography
         </h2>
 
         {/* Paragraph */}
-        <p className="text-lg leading-8 text-[#d6d6d6] mb-10">
+        <p className="lg:text-lg text-left text-[#d6d6d6] w mb-10">
           Hughes was for many years prior with his position with Alchemy Studios 
           a Visual Communication Specialist and built many movie props for Harry Potter 
           in Diagon Alley. As CEO and Creative Director at ZenChip PRIME Corp, Dan has 

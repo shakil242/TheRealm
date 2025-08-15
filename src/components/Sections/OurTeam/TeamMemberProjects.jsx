@@ -26,7 +26,7 @@ const TeamMemberProjects = () => {
   ];
 
   return (
-    <section className="team_member_projects  py-10">
+    <section className="team_member_projects -mb-15  py-10">
       <h3 className="section_title text-5xl font-bold mb-10 mt-15">
         Projects by Randy Gruber
       </h3>

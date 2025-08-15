@@ -107,7 +107,7 @@ export default function TeamSingle() {
         <hr className="border-t border-gray-600" />
       </div>
     </div>
-    <TeamMemberProjects/>
+    <TeamMemberProjects />
     
     </div>
     
