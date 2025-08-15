@@ -70,7 +70,6 @@ useEffect(() => {
             {danHughes.name}
           </h2>
 
-                    target="_blank"
           <div className="relative">
             {/* Image + Skills */}
             <div className="flex flex-col lg:flex-row gap-8">
