@@ -3,7 +3,7 @@ import React from "react";
 
 const ContactHeading = () => {
   return (
-    <div className="flex justify-center items-center mt-27  lg:mt-[170px] flex-col  ">
+    <div className="flex justify-center items-center mt-6 lg:mt-[4.5rem] flex-col">
       <h1 className="text-white text-[25px] sm:text-3xl lg:text-[3.2rem] font-semibold">
         CONTACT US
       </h1>

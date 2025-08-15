@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import img1 from "../../../assets/home-images/hero1.jpg";
 import img2 from "../../../assets/home-images/hero2.png";
 import img3 from "../../../assets/home-images/hero3.jpg";
 import img4 from "../../../assets/home-images/hero4.jpg";
 import { FaArrowUp } from "react-icons/fa6";
+import particlesConfig from "../../../assets/particlesjs-config.json";
 
 function HeroSection() {
   const slideData = [
@@ -59,11 +60,9 @@ function HeroSection() {
 
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const particlesRef = useRef(null);
 
   useEffect(() => {
-    if (paused) return;
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -74,20 +73,14 @@ function HeroSection() {
       });
     }, 50);
     return () => clearInterval(interval);
-  }, [paused, slideData.length]);
+  }, [slideData.length]);
 
-  // Track scroll to toggle button
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 200);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+    if (window.particlesJS && particlesRef.current) {
+      particlesRef.current.innerHTML = ""; // clear old particles
+      window.particlesJS("particles-js", particlesConfig);
+    }
+  }, [current]); // re-run when slide changes
 
   const imageVariants = {
     initial: { opacity: 0 },
@@ -107,15 +100,21 @@ function HeroSection() {
       <AnimatePresence mode="sync">
         <motion.div
           key={current}
+          // id="particles-js"
           className="absolute inset-0 bg-cover bg-center z-0"
           style={{ backgroundImage: `url(${slideData[current].img})` }}
           initial={{ scale: 1 }}
           animate={{ scale: 1.2 }}
           exit={{ scale: 1.2 }}
-          transition={{ duration: 4, ease: "easeIn" }}
+          transition={{ duration: 5, ease: "easeIn" }}
           variants={imageVariants}
         />
       </AnimatePresence>
+      <div
+        id="particles-js"
+        ref={particlesRef}
+        className="absolute inset-0 z-10"
+      />
 
       {/* Text content */}
       <div className="relative z-20 flex flex-col justify-between h-full w-full max-w-6xl pl-20 py-12">
@@ -178,29 +177,6 @@ function HeroSection() {
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Go to Top Button */}
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-50 flex flex-col items-center gap-2 text-white cursor-pointer"
-            whileHover={{
-              scale: 1.1,
-              color: "blue",
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            <FaArrowUp className="m-4 mb-5" />
-            <span className="text-sm font-medium transform rotate-90 origin-center">
-              Go to Top
-            </span>
-          </motion.button>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
