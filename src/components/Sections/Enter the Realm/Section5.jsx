@@ -40,7 +40,7 @@ function Section5() {
   return (
     <div className="bg-black text-white py-16 px-4 md:px-8">
       <div className="text-center mb-12 max-w-4xl mx-auto">
-        <p className="uppercase text-sm md:text-base tracking-wider font-semibold mb-2">
+        <p className="uppercase text-[14px] tracking-wider font-semibold mb-2">
           SERVICES IN THE REALM™
         </p>
         <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight uppercase">

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { buildApiUrl } from "../config/api";
+import { buildApiUrl, API_ENDPOINTS } from "../config/api";
 
 const AuthContext = createContext();
 
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await axios.post(
-        buildApiUrl("/api/users/login"),
+        buildApiUrl(API_ENDPOINTS.LOGIN),
         {
           email,
           password,
@@ -47,27 +47,34 @@ export const AuthProvider = ({ children }) => {
       );
 
       const userData = response.data;
-      setUser(userData);
-      localStorage.setItem("userinfo", JSON.stringify(userData));
-      return { success: true, data: userData };
+      setUser(userData.user);
+      localStorage.setItem("userinfo", JSON.stringify(userData.user));
+      localStorage.setItem("token", userData.token);
+      return { success: true, data: userData.user };
     } catch (error) {
       return {
         success: false,
         error:
-          error.response?.data?.message || "Login failed. Please try again.",
+          error.response?.data?.error || "Login failed. Please try again.",
       };
     }
   };
+  
   const logout = () => {
     setUser(null);
     localStorage.removeItem("userinfo");
   };
 
-  const register = async (userData) => {
+  const register = async (username, email, password, role) => {
     try {
       const response = await axios.post(
-        buildApiUrl("/api/users/register"),
-        userData,
+        buildApiUrl(API_ENDPOINTS.REGISTER),
+        {
+          username,
+          email,
+          password,
+          role: role || "user", // Use passed role or default to "user"
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -76,14 +83,17 @@ export const AuthProvider = ({ children }) => {
       );
 
       const newUser = response.data;
-      setUser(newUser);
-      localStorage.setItem("userinfo", JSON.stringify(newUser));
-      return { success: true, data: newUser };
+      setUser(newUser.user);
+      localStorage.setItem("userinfo", JSON.stringify(newUser.user));
+      localStorage.setItem("token", newUser.token);
+      return { success: true, data: newUser.user };
     } catch (error) {
+      console.log("Backend error response:", error.response?.data);
+      console.log("Full error object:", error);
       return {
         success: false,
         error:
-          error.response?.data?.message ||
+          error.response?.data?.error ||
           "Registration failed. Please try again.",
       };
     }
