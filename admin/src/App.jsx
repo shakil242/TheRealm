@@ -1,35 +1,99 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import Sidebar from "./components/Siderbar";
+import { Box } from "@mui/material";
 
-function App() {
-  const [count, setCount] = useState(0)
+// Scenes
+
+import VendorRequest from "./scenes/VendorRequest";
+import Orders from "./scenes/orders";
+import Users from "./scenes/users";
+import NFTRequest from "./scenes/NftRequest";
+import Register from "./scenes/register";
+import Dashboard from "./scenes/Dashboard";
+
+import { AuthProvider } from "./context/Authcontext";
+import ProtectedRoute from "./middleware/ProtectedRoute"; // Ensure path is correct
+
+const AppWrapper = () => {
+  const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const drawerWidth = 240;
+
+  const hideSidebar = location.pathname === "/" || location.pathname === "/register";
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      {!hideSidebar && <Sidebar drawerWidth={drawerWidth} />}
 
-export default App
+      <Box
+        component="main"
+        sx={{
+          marginLeft: !hideSidebar && isSidebarOpen ? `${drawerWidth}px` : 0,
+          transition: "margin 0.3s",
+        }}
+      >
+        <Routes>
+          {/* Public Route */}
+          <Route path="/" element={<Register />} />
+
+          {/* Admin Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+         
+          <Route
+            path="/vendor-request"
+            element={
+              <ProtectedRoute>
+                <VendorRequest />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/nft-request"
+            element={
+              <ProtectedRoute>
+                <NFTRequest />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Redirect unknown routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Box>
+    </>
+  );
+};
+
+const App = () => (
+  <BrowserRouter>
+    <AuthProvider>
+      <AppWrapper />
+    </AuthProvider>
+  </BrowserRouter>
+);
+
+export default App;

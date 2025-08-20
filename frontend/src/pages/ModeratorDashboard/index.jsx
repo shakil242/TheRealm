@@ -7,11 +7,15 @@ import AddNFT from "./AddNft";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
-  const { logout } = useAuth();
+  const { logout ,   refreshUser} = useAuth();
   const navigate = useNavigate();
+  useEffect(() => {
+  refreshUser(); // fetch latest role & info
+}, [])
 
   const handleLogout = () => {
     logout();

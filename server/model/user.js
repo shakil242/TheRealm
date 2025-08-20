@@ -21,8 +21,13 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "user", "moderator"],
+    enum: [ "user", "moderator"],
     default: "user",
+  },
+    status: {
+    type: String,
+    enum: ["pending", "active", "rejected"], // pending = awaiting super admin approval
+    default: "active", // regular users are active by default
   },
   createdAt: {
     type: Date,
