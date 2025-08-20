@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import nftRoutes from "./routes/nftRoutes.js"
+import adminRoutes from "./routes/adminRoutes.js"
+import userRoutes from "./routes/userRoutes.js"
 import path from "path";
 dotenv.config();
 
@@ -41,6 +43,8 @@ app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use('/api/nfts',nftRoutes)
+app.use('/api/admin',adminRoutes)
+app.use("/api/user", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

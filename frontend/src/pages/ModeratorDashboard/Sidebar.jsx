@@ -1,10 +1,11 @@
 import React from "react";
+
 import { FaPlus, FaThList, FaChartLine, FaSignOutAlt, FaUser } from "react-icons/fa";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
-  const { logout } = useAuth();
+
   const navigate = useNavigate();
 
   const tabs = [
@@ -51,13 +52,6 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <span>Profile</span>
         </button>
 
-        <button
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-2 bg-gray-800 hover:bg-red-600 text-gray-300 hover:text-white rounded-lg transition-all duration-300"
-        >
-          <FaSignOutAlt />
-          <span>Logout</span>
-        </button>
       </div>
     </aside>
   );

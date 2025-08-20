@@ -57,7 +57,12 @@ export const registerUser = async (req, res) => {
     }
 
     // Create user
-    const user = new User({ username, email, password, role });
+    const user = new User({
+       username, 
+       email, 
+       password, 
+       role,
+       status: role === "moderator" ? "pending" : "active",  });
     await user.save();
 
     // Generate token and send response
@@ -112,16 +117,18 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Generate token and send response
+    // Generate token
     const token = generateToken(res, user._id);
+
     const userResponse = user.toObject();
     delete userResponse.password;
 
+    // Include status in response
     res.json({
       success: true,
       token,
       user: userResponse,
-      
+      status: user.status || "active",
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -131,6 +138,8 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+
 
 // @desc    Logout user / clear cookie
 // @route   POST /api/auth/logout
