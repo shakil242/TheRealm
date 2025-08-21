@@ -9,7 +9,7 @@ import Sidebar from "./Sidebar";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const Dashboard = () => {
+const ModeratorDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { logout, refreshUser } = useAuth();
   const navigate = useNavigate();
@@ -44,4 +44,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ModeratorDashboard;

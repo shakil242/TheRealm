@@ -1,5 +1,5 @@
 import React from "react";
-import { FaPlus, FaThList, FaChartLine, FaUser, FaClock, FaTimes } from "react-icons/fa";
+import { FaPlus, FaThList, FaChartLine, FaUser, FaClock, FaTimes, FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 // The sidebar now accepts an `isOpen` and `toggleSidebar` prop
@@ -40,12 +40,22 @@ const Sidebar = ({ activeTab, setActiveTab, isOpen, toggleSidebar }) => {
 
         {/* Top Section - Non-scrollable */}
         <div className="flex-shrink-0 p-6">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white tracking-widest">
-              NFT DASHBOARD
-            </h2>
+          <div className="mb-4">
+            <h2 className="text-2xl font-bold text-white tracking-widest">NFT DASHBOARD</h2>
             <p className="text-gray-100 text-base mt-1">Admin Panel</p>
           </div>
+
+          {/* Home Button */}
+          <button
+            onClick={() => {
+              navigate("/");
+              toggleSidebar(); // Close sidebar on mobile
+            }}
+            className="flex items-center gap-3 px-4 py-2 mb-4 bg-gray-800 hover:bg-purple-600 text-gray-300 hover:text-white rounded-lg transition-all duration-300 w-full"
+          >
+            <FaHome />
+            <span>Home</span>
+          </button>
         </div>
 
         {/* Navigation - Scrollable section */}

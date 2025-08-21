@@ -21,17 +21,23 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
 
   // Fetch all users from backend
-  const fetchUsers = async () => {
-    try {
-      const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS));
-      // Only store active users initially
-      setUsers((res.data.users || []).filter(user => user.status === "active"));
-    } catch (err) {
-      console.error("Failed to fetch users:", err.response?.data || err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+ // Fetch all users from backend
+const fetchUsers = async () => {
+  try {
+    const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS));
+
+    // Filter users with role 'user' or 'moderator' and status 'active'
+    const filteredUsers = (res.data.users || []).filter(
+      (user) => (user.role === "user" || user.role === "moderator") && user.status === "active"
+    );
+
+    setUsers(filteredUsers);
+  } catch (err) {
+    console.error("Failed to fetch users:", err.response?.data || err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchUsers();

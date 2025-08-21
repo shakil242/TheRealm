@@ -26,7 +26,7 @@ function SingleProject() {
       <style>{marqueeStyle}</style>
 
       {/* Main container */}
-      <div className="min-h-screen mt-35 bg-[#0c0c11] max-w-7xl mx-auto px-4 ">
+      <div className="min-h-screen bg-[#0c0c11] max-w-7xl mx-auto px-4 ">
         {/* Main Title */}
         <h1 className="lg:text-[2.7rem] text-2xl ml-3 font-bold uppercase text-white p-7 mb-5">
           Boardwalk Island

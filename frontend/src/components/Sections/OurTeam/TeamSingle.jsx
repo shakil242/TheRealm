@@ -60,7 +60,7 @@ useEffect(() => {
   return (
     <>
       {/* Main Profile Section */}
-      <div className="bg-black text-white min-h-screen lg:mt-22 mt-20 py-8 font-sans antialiased">
+      <div className="bg-black text-white min-h-screen  py-8 font-sans antialiased">
         <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-5xl">
           {/* Name */}
           <h2 className='text-start mb-5 uppercase text-xs md:text-sm font-semibold'>
