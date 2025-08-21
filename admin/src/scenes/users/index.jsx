@@ -127,9 +127,7 @@ const Users = () => {
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <Button variant="outlined" color="primary" size="small" sx={{ mr: 1 }}>
-                    Edit
-                  </Button>
+                  
                   <Button variant="outlined" color="error" size="small">
                     Delete
                   </Button>

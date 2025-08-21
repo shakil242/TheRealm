@@ -8,35 +8,32 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Typography,
   CircularProgress,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { buildApiUrl, API_ENDPOINTS } from "../../config/api";
+import { buildApiUrl } from "../../config/api";
 
-const PendingNFTsAdmin = () => {
-  const [pendingNFTs, setPendingNFTs] = useState([]);
+const AllNFTsAdmin = () => {
+  const [nfts, setNFTs] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch Pending NFTs
-  const fetchPendingNFTs = async () => {
+  const fetchNFTs = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_NFTS), {
+      const res = await axios.get(buildApiUrl("/api/nfts/all"), {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.data.success) {
-        const onlyPending = res.data.nfts.filter(
-          (nft) => nft.status === "pending"
-        );
-        setPendingNFTs(onlyPending);
+        setNFTs(res.data.nfts);
       } else {
-        toast.error("Failed to load NFTs");
+        toast.error(res.data.error || "Failed to load NFTs");
       }
     } catch (err) {
       toast.error("Server error while fetching NFTs");
@@ -45,54 +42,47 @@ const PendingNFTsAdmin = () => {
     }
   };
 
-  // Update NFT status
-const updateStatus = async (id, status) => {
-  try {
-    const token = localStorage.getItem("token");
+  const updateStatus = async (id, status) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.put(
+        buildApiUrl(`/api/nfts/${id}/status`),
+        { status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    // replace :id in endpoint
-    const url = API_ENDPOINTS.UPDATE_NFT_STATUS.replace(":id", id);
-
-    const res = await axios.put(
-      buildApiUrl(url),
-      { status },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    if (res.data.success) {
-      toast.success(`NFT ${status} successfully`);
-      fetchPendingNFTs(); // refresh
-    } else {
-      toast.error(res.data.error || "Failed to update");
+      if (res.data.success) {
+        toast.success(`NFT status updated to "${status}"`);
+        fetchNFTs(); // refresh list
+      } else {
+        toast.error(res.data.error || "Failed to update");
+      }
+    } catch (err) {
+      toast.error("Server error while updating status");
     }
-  } catch (err) {
-    toast.error("Server error while updating status");
-  }
-};
-
-
+  };
 
   useEffect(() => {
-    fetchPendingNFTs();
+    fetchNFTs();
   }, []);
 
   return (
-    <Box p={4}>
+    <Box  p={4}>
       <ToastContainer />
       <Typography variant="h5" fontWeight="bold" gutterBottom>
-        Pending NFTs
+        All NFTs
       </Typography>
       <Typography variant="body2" color="text.secondary" gutterBottom>
-        Review and update the status of NFTs submitted by users.
+        Review all NFTs submitted by users.
       </Typography>
 
       {loading ? (
         <Box className="flex justify-center p-6">
           <CircularProgress />
         </Box>
-      ) : pendingNFTs.length === 0 ? (
+      ) : nfts.length === 0 ? (
         <Typography color="text.secondary" mt={4} align="center">
-          No pending NFTs found.
+          No NFTs found.
         </Typography>
       ) : (
         <TableContainer component={Paper} elevation={2}>
@@ -102,12 +92,12 @@ const updateStatus = async (id, status) => {
                 <TableCell><b>Image</b></TableCell>
                 <TableCell><b>Name</b></TableCell>
                 <TableCell><b>Price</b></TableCell>
-                <TableCell><b>Description</b></TableCell>
-                <TableCell><b>Actions</b></TableCell>
+                <TableCell><b>Status</b></TableCell>
+                <TableCell><b>Creator</b></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {pendingNFTs.map((nft) => (
+              {nfts.map((nft) => (
                 <TableRow key={nft._id}>
                   <TableCell>
                     <img
@@ -118,20 +108,17 @@ const updateStatus = async (id, status) => {
                   </TableCell>
                   <TableCell>{nft.name}</TableCell>
                   <TableCell>{nft.price} ETH</TableCell>
-                  <TableCell>{nft.description}</TableCell>
                   <TableCell>
-                    <Box display="flex" gap={1}>
-                      <Button
-                        variant="contained"
-                        color="success"
-                        size="small"
-                        onClick={() => updateStatus(nft._id, "available")}
-                      >
-                       approve
-                      </Button>
-                     
-                    </Box>
+                    <Select
+                      value={nft.status}
+                      onChange={(e) => updateStatus(nft._id, e.target.value)}
+                      size="small"
+                    >
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="available">Approved</MenuItem>
+                    </Select>
                   </TableCell>
+                  <TableCell>{nft.creator?.username || "Unknown"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -142,4 +129,4 @@ const updateStatus = async (id, status) => {
   );
 };
 
-export default PendingNFTsAdmin;
+export default AllNFTsAdmin;

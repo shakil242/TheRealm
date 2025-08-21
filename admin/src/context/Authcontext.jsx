@@ -31,32 +31,28 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Login
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post(
-        buildApiUrl(API_ENDPOINTS.LOGIN),
-        { email, password },
-        { headers: { "Content-Type": "application/json" } }
-      );
+ const login = async (email, password) => {
+  try {
+    const res = await axios.post(
+      buildApiUrl(API_ENDPOINTS.LOGIN),
+      { email, password },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-      const userData = res.data;
+    const userData = res.data;
 
-      setUser(userData.admin);
-      setToken(userData.token);
+    setUser(userData.admin);
+    setToken(userData.token);
+    localStorage.setItem("token", userData.token);
 
-      
-      localStorage.setItem("token", userData.token);
+    return { success: true, user: userData.admin, token: userData.token };
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Login failed. Please try again."
+    );
+  }
+};
 
-      return { success: true, user: userData.admin, token: userData.token };
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error.response?.data?.message ||
-          "Login failed. Please try again.",
-      };
-    }
-  };
 
   // Register
   const signup = async (username, email, password) => {

@@ -14,6 +14,7 @@ import Dashboard from "./scenes/Dashboard";
 
 import { AuthProvider } from "./context/Authcontext";
 import ProtectedRoute from "./middleware/ProtectedRoute"; // Ensure path is correct
+import AllNFTsAdmin from "./scenes/allNFTs";
 
 const AppWrapper = () => {
   const location = useLocation();
@@ -76,6 +77,14 @@ const AppWrapper = () => {
             element={
               <ProtectedRoute>
                 <NFTRequest />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/all-NFTs"
+            element={
+              <ProtectedRoute>
+                <AllNFTsAdmin />
               </ProtectedRoute>
             }
           />

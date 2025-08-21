@@ -9,6 +9,7 @@ const MyNFTs = () => {
   const [loading, setLoading] = useState(true);
 
   // Fetch NFTs from backend
+  // Fetch NFTs from backend
   const fetchNFTs = async () => {
     setLoading(true);
     try {
@@ -19,7 +20,11 @@ const MyNFTs = () => {
         },
       });
       if (response.data.success) {
-        setNftList(response.data.nfts);
+        // filter only available NFTs
+        const availableNFTs = response.data.nfts.filter(
+          (nft) => nft.status === "available"
+        );
+        setNftList(availableNFTs);
       } else {
         toast.error(response.data.error || "Failed to load NFTs");
       }
@@ -54,38 +59,47 @@ const MyNFTs = () => {
   };
 
   return (
-    <div>
+    <div className="p-6">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-4">My NFTs</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">My NFTs</h1>
 
       {loading ? (
-        <p>Loading NFTs...</p>
+        <p className="text-gray-500">Loading NFTs...</p>
       ) : nftList.length === 0 ? (
-        <p>No NFTs found. Add some new ones!</p>
+        <p className="text-gray-500">No NFTs found. Add some new ones!</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {nftList.map((nft) => (
-            <div key={nft._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div
+              key={nft._id}
+              className="bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
+            >
               <img
-  src={`http://localhost:5001/uploads/${nft.image}`}
-  alt={nft.name}
-  className="w-full h-48 object-cover"
-/>
+                src={`http://localhost:5001/uploads/${nft.image}`}
+                alt={nft.name}
+                className="w-full h-56 object-cover"
+              />
 
-              <div className="p-4">
-                <h2 className="font-semibold">{nft.name}</h2>
-                <p className="text-gray-500">{nft.price} ETH</p>
-                <p className="text-gray-400 text-sm">{nft.description}</p>
-                <div className="mt-3 flex gap-2">
+              <div className="p-4 flex flex-col flex-grow">
+                <h2 className="font-semibold text-lg text-gray-800 truncate">
+                  {nft.name}
+                </h2>
+                <p className="text-purple-600 font-bold mt-1">{nft.price} ETH</p>
+                <p className="text-gray-500 text-sm mt-2 flex-grow">
+                  {nft.description || "No description available"}
+                </p>
+
+                {/* Action buttons */}
+                <div className="mt-4 flex gap-3">
                   <button
                     onClick={() => toast.info("Edit feature coming soon!")}
-                    className="bg-purple-600 text-white px-3 py-1 rounded hover:bg-purple-700 transition"
+                    className="w-1/2 bg-purple-600 text-white py-2 rounded-xl hover:bg-purple-700 transition"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(nft._id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition"
+                    className="w-1/2 bg-red-600 text-white py-2 rounded-xl hover:bg-red-700 transition"
                   >
                     Delete
                   </button>

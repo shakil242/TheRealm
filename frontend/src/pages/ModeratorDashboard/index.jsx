@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Import all dashboard components
 import Overview from "./Overview";
 import MyNFTs from "./MyNFTs";
 import AddNFT from "./AddNft";
+import PendingNFTs from "./PendingNFTs";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
-  const { logout ,   refreshUser} = useAuth();
+  const { logout, refreshUser } = useAuth();
   const navigate = useNavigate();
+
   useEffect(() => {
-  refreshUser(); // fetch latest role & info
-}, [])
+    refreshUser(); // fetch latest role & info
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -23,31 +24,21 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-purple-600 text-white p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Moderator Dashboard</h1>
-        <div className="flex items-center gap-4">
-          <span className="font-medium">Moderator</span>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 rounded-lg hover:bg-red-600 transition"
-          >
-            Logout
-          </button>
+    <div className="bg-white">
+      <div className="min-h-screen">
+        <div className="flex flex-col md:flex-row">
+          {/* Sidebar */}
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+          {/* Main content */}
+          {/* Updated: Added md:ml-64 to apply the margin only on medium screens and up */}
+          <main className="flex-1 p-6 md:ml-64">
+            {activeTab === "overview" && <Overview />}
+            {activeTab === "nfts" && <MyNFTs />}
+            {activeTab === "pending" && <PendingNFTs />}
+            {activeTab === "add" && <AddNFT />}
+          </main>
         </div>
-      </header>
-
-      <div className="flex flex-col md:flex-row">
-        {/* Sidebar */}
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-        {/* Main content */}
-        <main className="flex-1 p-6">
-          {activeTab === "overview" && <Overview />}
-          {activeTab === "nfts" && <MyNFTs />}
-          {activeTab === "add" && <AddNFT />}
-        </main>
       </div>
     </div>
   );

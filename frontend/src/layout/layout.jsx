@@ -1,21 +1,22 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Footer from '../components/Footer';
-import Navbar from '../components/Navbar';
+import React from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 function Layout({ children }) {
+  const location = useLocation();
+
+  // Check if current path starts with "/dashboard"
+  const isDashboard = location.pathname.startsWith("/dashboard");
+
   return (
-    <div>
-      <div>
-        <Navbar />
+    <div className="flex flex-col min-h-screen">
+     { !isDashboard && <Navbar />}
+      <div className="flex-1">
+        <Outlet />
+        {children}
       </div>
-      <div>
-        <Outlet /> 
-        {children} 
-      </div>
-      <div>
-        <Footer /> 
-      </div>
+      {!isDashboard && <Footer />}
     </div>
   );
 }
