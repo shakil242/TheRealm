@@ -6,50 +6,76 @@ const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize user from localStorage on app start
+  // Load from localStorage on app start
   useEffect(() => {
-    const userInfo = localStorage.getItem("userinfo");
-    if (userInfo) {
-      try {
-        setUser(JSON.parse(userInfo));
-      } catch (error) {
-        console.error("Error parsing user info:", error);
-        localStorage.removeItem("userinfo");
-      }
+    const storedUser = localStorage.getItem("userinfo");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
     }
     setLoading(false);
   }, []);
 
-  // Login
+  // Login (admin, moderator, user)
   const login = async (email, password) => {
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         buildApiUrl(API_ENDPOINTS.LOGIN),
         { email, password },
         { headers: { "Content-Type": "application/json" } }
       );
 
-      const userData = response.data;
+      // backend should return user object + token
+      const userData = res.data.user || res.data.admin; // admin may be in res.data.admin
+      const jwtToken = res.data.token;
 
-      setUser(userData.user);
-      localStorage.setItem("userinfo", JSON.stringify(userData.user));
-      localStorage.setItem("token", userData.token);
+      setUser(userData);
+      setToken(jwtToken);
+      localStorage.setItem("userinfo", JSON.stringify(userData));
+      localStorage.setItem("token", jwtToken);
 
-      return { success: true, user: userData.user, token: userData.token };
+      return { success: true, user: userData, token: jwtToken };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.error || "Login failed. Please try again.",
+        error: error.response?.data?.message || "Login failed",
+      };
+    }
+  };
+
+  // Register
+  const register = async (username, email, password, role = "user") => {
+    try {
+      const res = await axios.post(
+        buildApiUrl(API_ENDPOINTS.REGISTER),
+        { username, email, password, role },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const userData = res.data.user || res.data.admin;
+      const jwtToken = res.data.token;
+
+      setUser(userData);
+      setToken(jwtToken);
+      localStorage.setItem("userinfo", JSON.stringify(userData));
+      localStorage.setItem("token", jwtToken);
+
+      return { success: true, user: userData, token: jwtToken };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || "Registration failed",
       };
     }
   };
@@ -57,76 +83,44 @@ export const AuthProvider = ({ children }) => {
   // Logout
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem("userinfo");
     localStorage.removeItem("token");
-  };
-
-  // Register
-  const register = async (username, email, password, role) => {
-    try {
-      const response = await axios.post(
-        buildApiUrl(API_ENDPOINTS.REGISTER),
-        {
-          username,
-          email,
-          password,
-          role: role || "user",
-        },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      const newUser = response.data;
-      setUser(newUser.user);
-      localStorage.setItem("userinfo", JSON.stringify(newUser.user));
-      localStorage.setItem("token", newUser.token);
-
-      return { success: true, user: newUser.user };
-    } catch (error) {
-      console.error("Registration error:", error.response?.data || error);
-      return {
-        success: false,
-        error: error.response?.data?.error || "Registration failed. Please try again.",
-      };
-    }
   };
 
   // Refresh user info from backend
   const refreshUser = async () => {
     try {
-      const token = localStorage.getItem("token");
       if (!token) return;
-
       const res = await axios.get(buildApiUrl(API_ENDPOINTS.PROFILE), {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setUser(res.data.user);
-      localStorage.setItem("userinfo", JSON.stringify(res.data.user));
+      setUser(res.data.user || res.data.admin);
+      localStorage.setItem("userinfo", JSON.stringify(res.data.user || res.data.admin));
     } catch (err) {
-      console.error("Failed to refresh user:", err.response?.data || err.message);
+      console.error("Failed to refresh user:", err);
     }
   };
 
   useEffect(() => {
     refreshUser();
-    const interval = setInterval(() => {
-      refreshUser();
-    }, 1000);
-
+    const interval = setInterval(() => refreshUser(), 5000); // optional refresh
     return () => clearInterval(interval);
-  }, []);
+  }, [token]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        status: user?.status || null, // <-- status available
+        token,
         loading,
         login,
         logout,
         register,
         refreshUser,
-        isAuthenticated: !!user , // only active users are authenticated
+        isAuthenticated: !!user,
+        role: user?.role || null,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/Authcontext";
+import { useAuth } from "../../Context/AuthContext";
 import { FaUserCircle, FaChartLine, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";

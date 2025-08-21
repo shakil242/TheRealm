@@ -1,5 +1,5 @@
 import express from "express";
-import { addNFT, getAllNFTs,getMyNFTs, deleteNFT, upload, updateNFTStatus } from "../controller/addNftController.js";
+import { addNFT, getAllNFTs,getMyNFTs, deleteNFT, upload, updateNFTStatus } from "../controller/NftController.js";
 import { protect } from "../middleware/authMiddleware.js"; // middleware to check logged in user
 
 const router = express.Router();

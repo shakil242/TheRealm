@@ -1,10 +1,16 @@
+// src/App.jsx
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./layout/layout";
+import AdminLayout from "./layout/AdminLayout";
+
+// Public Pages
 import Home from "./pages/Home";
 import ContactUs from "./pages/ContactUs";
 import OurServices from "./pages/OurServices";
 import OurTeam from "./pages/OurTeam";
+import TeamSingle from "./components/Sections/OurTeam/TeamSingle";
+import SingleProject from "./components/Sections/OurTeam/SingleProject";
 import EnterTheRealm from "./pages/EnterTheRealm";
 import NineIslandVault from "./pages/NineIslandVault";
 import TheRealmPortal from "./pages/TheRealmPortal";
@@ -32,80 +38,89 @@ import WishlistPage from "./pages/WishlistPage";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import IslandLocations from "./pages/IslandLocations";
-import TeamSingle from "./components/Sections/OurTeam/TeamSingle";
-import SingleProject from "./components/Sections/OurTeam/SingleProject";
-import Dashboard from "./pages/ModeratorDashboard/index"
+
+// Admin Pages
+import Dashboard from "./scenes/Dashboard";
+import Orders from "./scenes/orders";
+import Users from "./scenes/users";
+import VendorRequest from "./scenes/VendorRequest";
+import NFTRequest from "./scenes/NftRequest";
+import AllNFTsAdmin from "./scenes/allNFTs";
+
+// Moderator Pages
+import ModeratorDashboard from "./pages/ModeratorDashboard";
+
+// Auth
+import { AuthProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./Routes/ProtectedRoute";
-
-
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
+          {/* Public Layout */}
           <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/contacts" element={<ContactUs />}></Route>
-            <Route path="/card-services" element={<OurServices />}></Route>
-            <Route path="/our-team" element={<OurTeam />}></Route>
-            <Route path="/our-team/:memberName" element={<TeamSingle />} />
-            <Route path="/single-project-detail/:projectName" element={<SingleProject/>} />
-          
-            <Route path="/enter-the-realm" element={<EnterTheRealm />}></Route>
-            <Route path="/9-island-vault" element={<NineIslandVault />}></Route>
-            <Route
-              path="/the-realm-portal"
-              element={<TheRealmPortal />}
-            ></Route>
-            <Route path="/the-realm-core" element={<TheRealmCore />}></Route>
-            <Route path="/asclepia-key" element={<AsclepiaKey />}></Route>
-            <Route path="/boardwalk" element={<BoardwalkIsland />}></Route>
-            <Route path="/commerce" element={<CommerceCenter />}></Route>
-            <Route path="/grand-casino" element={<GrandIsland />}></Route>
-            <Route path="/hyperion-island" element={<HyperionIsland />}></Route>
-            <Route path="/lamont-villas" element={<LamontVillas />}></Route>
-            <Route path="/marina-cove" element={<MarinaCove />}></Route>
-            <Route path="/north-umbria" element={<NorthUmbria />}></Route>
-            <Route path="/subversa" element={<Subversa />}></Route>
-            <Route path="/white-horse-key" element={<WhiteHorseKey />}></Route>
-            <Route path="/fanbase-sponsorship" element={<Fanbase />}></Route>
-            <Route path="/card-members" element={<FanbaseMembers />}></Route>
-            <Route path="/news-blox" element={<News />}></Route>
-            <Route path="/shop" element={<Shop />}></Route>
-            <Route
-              path="/metamask-wallet-tutorial"
-              element={<MetaMaskWalletTutorial />}
-            ></Route>
-            <Route
-              path="/hyperion-event-stadium"
-              element={<HyperionEventStadium />}
-            ></Route>
-            <Route path="/fracs-collection" element={<FRACS />}></Route>
-            <Route path="/profile" element={<Profile  />}></Route>
-              
-                          {/*  protected route*/}
-                            <Route
-                            path="/dashboard"
-                            element={
-                              <ProtectedRoute requiredRole="moderator">
-                                <Dashboard />
-                              </ProtectedRoute>
-                            }
-                          />
-
-            <Route path="/edit-profile" element={<EditProfile />}></Route>
-            <Route path="/wishlist-page" element={<WishlistPage />}></Route>
-            <Route path="/cart" element={<Cart />}></Route>
-            <Route path="/checkout" element={<Checkout />}></Route>
-            <Route
-              path="/island-locations"
-              element={<IslandLocations />}
-            ></Route>
+            <Route index element={<Home />} />
+            <Route path="contacts" element={<ContactUs />} />
+            <Route path="card-services" element={<OurServices />} />
+            <Route path="our-team" element={<OurTeam />} />
+            <Route path="our-team/:memberName" element={<TeamSingle />} />
+            <Route path="single-project-detail/:projectName" element={<SingleProject />} />
+            <Route path="enter-the-realm" element={<EnterTheRealm />} />
+            <Route path="9-island-vault" element={<NineIslandVault />} />
+            <Route path="the-realm-portal" element={<TheRealmPortal />} />
+            <Route path="the-realm-core" element={<TheRealmCore />} />
+            <Route path="asclepia-key" element={<AsclepiaKey />} />
+            <Route path="boardwalk" element={<BoardwalkIsland />} />
+            <Route path="commerce" element={<CommerceCenter />} />
+            <Route path="grand-casino" element={<GrandIsland />} />
+            <Route path="hyperion-island" element={<HyperionIsland />} />
+            <Route path="lamont-villas" element={<LamontVillas />} />
+            <Route path="marina-cove" element={<MarinaCove />} />
+            <Route path="north-umbria" element={<NorthUmbria />} />
+            <Route path="subversa" element={<Subversa />} />
+            <Route path="white-horse-key" element={<WhiteHorseKey />} />
+            <Route path="fanbase-sponsorship" element={<Fanbase />} />
+            <Route path="card-members" element={<FanbaseMembers />} />
+            <Route path="news-blox" element={<News />} />
+            <Route path="shop" element={<Shop />} />
+            <Route path="metamask-wallet-tutorial" element={<MetaMaskWalletTutorial />} />
+            <Route path="hyperion-event-stadium" element={<HyperionEventStadium />} />
+            <Route path="fracs-collection" element={<FRACS />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="edit-profile" element={<EditProfile />} />
+            <Route path="wishlist-page" element={<WishlistPage />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="island-locations" element={<IslandLocations />} />
           </Route>
+
+          {/* Moderator Routes */}
+          <Route
+            path="/moderator-dashboard"
+            element={
+              <ProtectedRoute requiredRole="moderator">
+                <ModeratorDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Routes */}
+         <Route element={<ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>}>
+  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/orders" element={<Orders />} />
+  <Route path="/users" element={<Users />} />
+  <Route path="/vendor-request" element={<VendorRequest />} />
+  <Route path="/nft-request" element={<NFTRequest />} />
+  <Route path="/all-nfts" element={<AllNFTsAdmin />} />
+</Route>
+
+          {/* Redirect unknown routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
-    </>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
