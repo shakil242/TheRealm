@@ -20,7 +20,7 @@ const nftSchema = new mongoose.Schema(
     },
     creator: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // link to the user who added it
+      ref: "User",
       required: true,
     },
     category: {
@@ -29,8 +29,14 @@ const nftSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["available", "sold"],
-      default: "available",
+      enum: ["pending", "available", "sold"],
+      default: "pending",
+    },
+    stock: {
+      type: Number,
+      required: true,
+      default: 1, // default 1 if not specified
+      min: [0, "Stock cannot be negative"],
     },
   },
   { timestamps: true }

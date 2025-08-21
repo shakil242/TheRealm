@@ -14,6 +14,7 @@ const navItems = [
   { text: "Orders", path: "/orders", icon: <ShoppingCartOutlined fontSize="small" /> },
   { text: "Users", path: "/users", icon: <PeopleOutlined fontSize="small" /> },
   { text: "NFT Request", path: "/nft-request", icon: <ReceiptLongOutlined fontSize="small" /> },
+    { text: "All NFTs", path: "/all-nfts", icon: <AdminPanelSettingsOutlined fontSize="small" /> },
 ];
 
 const Sidebar = ({ drawerWidth = 240 }) => {

@@ -18,12 +18,12 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div className="text-center mt-10 text-gray-700">Loading profile...</div>;
+    return <div className="text-center  text-gray-700">Loading profile...</div>;
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col mt-20 items-center justify-center h-screen text-center px-4">
+      <div className="flex flex-col  items-center justify-center h-screen text-center px-4">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">
           You are not logged in
         </h2>
@@ -45,7 +45,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen mt-22 py-10 px-4 md:px-8">
+    <div className="bg-gray-100 min-h-screen py-10 px-4 md:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
           

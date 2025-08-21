@@ -31,7 +31,7 @@ const VideoSection = () => {
 
   return (
     <section
-      className="relative w-full mt-24 overflow-x-hidden"
+      className="relative w-full  overflow-x-hidden"
       style={{ paddingTop: "56.25%" }}
     >
       <iframe

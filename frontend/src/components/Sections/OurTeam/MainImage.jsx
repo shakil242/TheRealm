@@ -14,7 +14,7 @@ export default function MainImage() {
   }, []);
 
   return (
-    <div className="relative w-full font-sans  mt-18 ">
+    <div className="relative w-full font-sans   ">
       {/* Background Image */}
       <img
         src={OurTeamCover}

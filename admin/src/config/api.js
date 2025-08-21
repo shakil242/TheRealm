@@ -24,6 +24,6 @@ export const API_ENDPOINTS = {
   ADD_NFT: "/api/nfts",            // Add new NFT (with image)
   GET_MY_NFTS: "/api/nfts/my",     // NFTs of logged-in user
   GET_ALL_NFTS: "/api/nfts/all",   // Public: all NFTs for shop
-  UPDATE_NFT: "/api/nfts/:id",     // Update NFT by id
+  UPDATE_NFT_STATUS: "/api/nfts/:id/status",     // Update NFT by id
   DELETE_NFT: "/api/nfts/:id",     // Delete NFT by id
 };

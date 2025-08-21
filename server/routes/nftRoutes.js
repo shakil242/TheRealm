@@ -1,5 +1,5 @@
 import express from "express";
-import { addNFT, getAllNFTs,getMyNFTs, deleteNFT, upload } from "../controller/addNftController.js";
+import { addNFT, getAllNFTs,getMyNFTs, deleteNFT, upload, updateNFTStatus } from "../controller/addNftController.js";
 import { protect } from "../middleware/authMiddleware.js"; // middleware to check logged in user
 
 const router = express.Router();
@@ -15,5 +15,6 @@ router.get("/all", getAllNFTs);
 
 // Delete NFT
 router.delete("/:id", protect, deleteNFT);
+router.put("/:id/status",updateNFTStatus)
 
 export default router;
