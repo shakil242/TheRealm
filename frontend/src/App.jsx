@@ -53,6 +53,7 @@ import ModeratorDashboard from "./pages/ModeratorDashboard";
 // Auth
 import { AuthProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./Routes/ProtectedRoute";
+import BuyNow from "./pages/BuyNow";
 
 function App() {
   return (
@@ -85,6 +86,7 @@ function App() {
             <Route path="card-members" element={<FanbaseMembers />} />
             <Route path="news-blox" element={<News />} />
             <Route path="shop" element={<Shop />} />
+             <Route path="/nft/:id" element={<BuyNow />} />
             <Route path="metamask-wallet-tutorial" element={<MetaMaskWalletTutorial />} />
             <Route path="hyperion-event-stadium" element={<HyperionEventStadium />} />
             <Route path="fracs-collection" element={<FRACS />} />

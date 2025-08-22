@@ -1,102 +1,157 @@
 import React from "react";
-import { FaPlus, FaThList, FaChartLine, FaUser, FaClock, FaTimes, FaHome } from "react-icons/fa";
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  IconButton,
+  Box,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { FaPlus, FaThList, FaChartLine, FaUser, FaClock, FaHome, FaShoppingCart, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-// The sidebar now accepts an `isOpen` and `toggleSidebar` prop
-const Sidebar = ({ activeTab, setActiveTab, isOpen, toggleSidebar }) => {
+const SidebarMUI = ({ activeTab, setActiveTab, isOpen, toggleSidebar }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md")); // md and up = permanent
 
   const tabs = [
     { key: "overview", label: "Overview", icon: <FaChartLine /> },
     { key: "nfts", label: "My NFTs", icon: <FaThList /> },
     { key: "pending", label: "Pending NFTs", icon: <FaClock /> },
     { key: "add", label: "Add NFT", icon: <FaPlus /> },
+    { key: "orders", label: "Orders", icon: <FaShoppingCart /> },
   ];
 
   return (
-    <>
-      {/* Mobile Overlay for when the sidebar is open */}
-      {isOpen && (
-        <div
-          onClick={toggleSidebar}
-          className="md:hidden fixed inset-0 z-30 bg-gray-900 opacity-50 transition-opacity duration-300"
-        ></div>
-      )}
+    <Drawer
+      variant={isDesktop ? "permanent" : "temporary"} // permanent on desktop, temporary on mobile
+      open={isDesktop ? true : isOpen}
+      onClose={toggleSidebar}
+      anchor="left"
+      PaperProps={{
+        sx: {
+          width: 256,
+          bgcolor: "#1f2937",
+          color: "white",
+          display: "flex",
+          flexDirection: "column",
+        },
+      }}
+    >
+      {/* Top Section */}
+      <Box sx={{ p: 3, flexShrink: 0 }}>
+        <Box sx={{ mb: 2 }}>
+          <h2 className="text-2xl font-bold tracking-widest">NFT DASHBOARD</h2>
+          <p className="text-gray-100 text-base mt-1">Admin Panel</p>
+        </Box>
 
-      {/* Main Sidebar */}
-      <aside
-        className={`
-          bg-gray-900 w-64 h-screen fixed top-0 left-0 z-40
-          md:flex flex-col border-r border-gray-800 shadow-lg
-          transform transition-transform duration-300
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0
-        `}
+        <ListItemButton
+          onClick={() => {
+            navigate("/");
+            if (!isDesktop) toggleSidebar();
+          }}
+          sx={{
+            mb: 2,
+            bgcolor: "#111827",
+            "&:hover": { bgcolor: "#6b21a8" },
+            borderRadius: 1,
+          }}
+        >
+          <ListItemIcon sx={{ color: "white" }}><FaHome /></ListItemIcon>
+          <ListItemText primary="Home" />
+        </ListItemButton>
+        <Divider sx={{ borderColor: "#374151" }} />
+      </Box>
+
+      {/* Navigation Scrollable Section */}
+     {/* Navigation Scrollable Section */}
+<Box
+  sx={{
+    flex: 1,
+    overflowY: "auto",
+    px: 1,
+    py: 2,
+    "&::-webkit-scrollbar": {
+      width: "8px",
+    },
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: "#1f2937", // matches sidebar background
+      borderRadius: "4px",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#4b5563", // dark gray thumb
+      borderRadius: "4px",
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      backgroundColor: "#6b7280", // lighter on hover
+    },
+    scrollbarWidth: "thin", // for Firefox
+    scrollbarColor: "#4b5563 #1f2937", // thumb track for Firefox
+  }}
+>
+  <List>
+    {tabs.map((tab) => (
+      <ListItemButton
+        key={tab.key}
+        selected={activeTab === tab.key}
+        onClick={() => {
+          setActiveTab(tab.key);
+          if (!isDesktop) toggleSidebar();
+        }}
+        sx={{
+          "&.Mui-selected": {
+            bgcolor: "#6b21a8",
+            "&:hover": { bgcolor: "#7c3aed" },
+          },
+          "&:hover": { bgcolor: "#4b5563" },
+          borderRadius: 1,
+          mb: 1,
+        }}
       >
-        {/* Close Button for Mobile */}
-        <div className="md:hidden absolute top-4 right-4 text-white cursor-pointer" onClick={toggleSidebar}>
-          <FaTimes size={20} />
-        </div>
+        <ListItemIcon sx={{ color: "white" }}>{tab.icon}</ListItemIcon>
+        <ListItemText primary={tab.label} />
+      </ListItemButton>
+    ))}
+  </List>
+</Box>
 
-        {/* Top Section - Non-scrollable */}
-        <div className="flex-shrink-0 p-6">
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold text-white tracking-widest">NFT DASHBOARD</h2>
-            <p className="text-gray-100 text-base mt-1">Admin Panel</p>
-          </div>
 
-          {/* Home Button */}
-          <button
-            onClick={() => {
-              navigate("/");
-              toggleSidebar(); // Close sidebar on mobile
-            }}
-            className="flex items-center gap-3 px-4 py-2 mb-4 bg-gray-800 hover:bg-purple-600 text-gray-300 hover:text-white rounded-lg transition-all duration-300 w-full"
-          >
-            <FaHome />
-            <span>Home</span>
-          </button>
-        </div>
+      {/* Profile Section */}
+      <Box sx={{ flexShrink: 0, p: 3, borderTop: "1px solid #374151" }}>
+        <ListItemButton
+          onClick={() => navigate("/profile")}
+          sx={{
+            bgcolor: "#111827",
+            "&:hover": { bgcolor: "#2563eb" },
+            borderRadius: 1,
+          }}
+        >
+          <ListItemIcon sx={{ color: "white" }}><FaUser /></ListItemIcon>
+          <ListItemText primary="Profile" />
+        </ListItemButton>
+      </Box>
 
-        {/* Navigation - Scrollable section */}
-        <nav className="flex-1 overflow-y-auto px-6">
-          <ul className="flex flex-col space-y-3">
-            {tabs.map((tab) => (
-              <li key={tab.key}>
-                <button
-                  onClick={() => {
-                    setActiveTab(tab.key);
-                    toggleSidebar(); // Close sidebar on mobile after selection
-                  }}
-                  className={`flex items-center gap-4 w-full px-4 py-3 rounded-lg transition-all duration-300
-                    ${
-                      activeTab === tab.key
-                        ? "bg-purple-600 text-white font-semibold shadow-lg"
-                        : "text-gray-300 hover:bg-purple-800 hover:text-white"
-                    }
-                  `}
-                >
-                  <span className="text-lg">{tab.icon}</span>
-                  <span className="text-sm md:text-base">{tab.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* Profile Button - Non-scrollable */}
-        <div className="flex-shrink-0 p-6 border-t border-gray-800">
-          <button
-            onClick={() => navigate("/profile")}
-            className="w-full flex items-center gap-3 px-4 py-2 bg-gray-800 hover:bg-blue-600 text-gray-300 hover:text-white rounded-lg transition-all duration-300"
-          >
-            <FaUser />
-            <span>Profile</span>
-          </button>
-        </div>
-      </aside>
-    </>
+      {/* Close Button for Mobile */}
+      {!isDesktop && (
+        <IconButton
+          onClick={toggleSidebar}
+          sx={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+            color: "white",
+          }}
+        >
+          <FaTimes />
+        </IconButton>
+      )}
+    </Drawer>
   );
 };
 
-export default Sidebar;
+export default SidebarMUI;

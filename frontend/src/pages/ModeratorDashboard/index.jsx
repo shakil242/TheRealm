@@ -5,12 +5,14 @@ import Overview from "./Overview";
 import MyNFTs from "./MyNFTs";
 import AddNFT from "./AddNft";
 import PendingNFTs from "./PendingNFTs";
-import Sidebar from "./Sidebar";
+import Orders from "./Orders";
+import SidebarMUI from "./Sidebar"; // ✅ Import MUI sidebar
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const ModeratorDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [sidebarOpen, setSidebarOpen] = useState(true); // control MUI drawer
   const { logout, refreshUser } = useAuth();
   const navigate = useNavigate();
 
@@ -23,23 +25,26 @@ const ModeratorDashboard = () => {
     navigate("/"); // redirect to home/login after logout
   };
 
-  return (
-    <div className="bg-white">
-      <div className="min-h-screen">
-        <div className="flex flex-col md:flex-row">
-          {/* Sidebar */}
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
 
-          {/* Main content */}
-          {/* Updated: Added md:ml-64 to apply the margin only on medium screens and up */}
-          <main className="flex-1 p-6 md:ml-64">
-            {activeTab === "overview" && <Overview />}
-            {activeTab === "nfts" && <MyNFTs />}
-            {activeTab === "pending" && <PendingNFTs />}
-            {activeTab === "add" && <AddNFT />}
-          </main>
-        </div>
-      </div>
+  return (
+    <div className="bg-white min-h-screen flex">
+      {/* Sidebar */}
+      <SidebarMUI
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+      />
+
+      {/* Main content */}
+      <main className="flex-1 p-6" style={{ marginLeft: sidebarOpen ? 256 : 0, transition: "margin-left 0.3s" }}>
+        {activeTab === "overview" && <Overview />}
+        {activeTab === "orders" && <Orders />}
+        {activeTab === "nfts" && <MyNFTs />}
+        {activeTab === "pending" && <PendingNFTs />}
+        {activeTab === "add" && <AddNFT />}
+      </main>
     </div>
   );
 };

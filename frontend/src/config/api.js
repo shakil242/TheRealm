@@ -22,6 +22,14 @@ export const API_ENDPOINTS = {
   ADD_NFT: "/api/nfts",           // Add NFT
   GET_MY_NFTS: "/api/nfts/my",    // NFTs of logged-in user
   GET_ALL_NFTS: "/api/nfts/all",  // Public for shop
+  GET_NFT_BY_ID: "/api/nfts/:id", // 👈 NEW — Get NFT by ID
   UPDATE_NFT_STATUS: "/api/nfts/:id/status", // Approve NFT
   DELETE_NFT: "/api/nfts/:id",   // Delete NFT
+
+
+  //
+  PLACE_ORDER:"/api/orders/order-placed",
+  MY_ORDERS:"/api/orders/my-orders",
+  GET_SPECIFIC_CREATOR_ORDER:"/api/orders/creator/:userId",
+  GET_ALL_ORDERS:"/api/orders/all-orders"
 };
