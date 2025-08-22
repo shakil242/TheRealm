@@ -6,6 +6,7 @@ import {
   ShoppingCartOutlined,
   ReceiptLongOutlined,
   AdminPanelSettingsOutlined,
+  HomeOutlined,
 } from "@mui/icons-material";
 
 const navItems = [
@@ -14,7 +15,7 @@ const navItems = [
   { text: "Orders", path: "/orders", icon: <ShoppingCartOutlined fontSize="small" /> },
   { text: "Users", path: "/users", icon: <PeopleOutlined fontSize="small" /> },
   { text: "NFT Request", path: "/nft-request", icon: <ReceiptLongOutlined fontSize="small" /> },
-    { text: "All NFTs", path: "/all-nfts", icon: <AdminPanelSettingsOutlined fontSize="small" /> },
+  { text: "All NFTs", path: "/all-nfts", icon: <AdminPanelSettingsOutlined fontSize="small" /> },
 ];
 
 const Sidebar = ({ drawerWidth = 240 }) => {
@@ -31,7 +32,7 @@ const Sidebar = ({ drawerWidth = 240 }) => {
       sx={{
         width: drawerWidth,
         height: "100vh",
-        background: "#1a1a2e", // custom dark sidebar
+        background: "#1a1a2e",
         color: "#fff",
         display: "flex",
         flexDirection: "column",
@@ -50,6 +51,32 @@ const Sidebar = ({ drawerWidth = 240 }) => {
 
       {/* Menu Items */}
       <Box sx={{ flex: 1, p: 2 }}>
+        {/* Home Button */}
+        <Box
+          onClick={() => navigate("/")}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            px: 2,
+            py: 1,
+            borderRadius: "8px",
+            cursor: "pointer",
+            mb: 2,
+            background: active === "/" ? "#16213e" : "transparent",
+            color: active === "/" ? "#00adb5" : "#ccc",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              background: "#16213e",
+              color: "#00adb5",
+            },
+          }}
+        >
+          <HomeOutlined fontSize="small" />
+          <Typography fontSize="0.95rem">Home</Typography>
+        </Box>
+
+        {/* Other Menu Items */}
         {navItems.map(({ text, path, icon }) => (
           <Box
             key={text}
@@ -78,8 +105,16 @@ const Sidebar = ({ drawerWidth = 240 }) => {
         ))}
       </Box>
 
-      {/* Footer (optional) */}
-      <Box sx={{ p: 2, borderTop: "1px solid rgba(255,255,255,0.1)", fontSize: "0.8rem", textAlign: "center", color: "#888" }}>
+      {/* Footer */}
+      <Box
+        sx={{
+          p: 2,
+          borderTop: "1px solid rgba(255,255,255,0.1)",
+          fontSize: "0.8rem",
+          textAlign: "center",
+          color: "#888",
+        }}
+      >
         © 2025 Admin
       </Box>
     </Box>

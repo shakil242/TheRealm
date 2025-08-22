@@ -1,18 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Paper,
+} from "@mui/material";
 import axios from "axios";
 import { buildApiUrl } from "../../config/api";
 
 const AddNFT = () => {
- const [formData, setFormData] = useState({
-  name: "",
-  description: "",
-  image: null,
-  price: "",
-  stock: "",      // new
-  category: "",   // new
-});
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    image: null,
+    price: "",
+    stock: "",
+    category: "",
+  });
 
-  const [preview, setPreview] = useState(null); // for image preview
+  const [preview, setPreview] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -23,7 +34,6 @@ const AddNFT = () => {
       [name]: file || value,
     }));
 
-    // Show preview if file is selected
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result);
@@ -35,20 +45,19 @@ const AddNFT = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const token = localStorage.getItem("token"); 
+    const token = localStorage.getItem("token");
     if (!token) return alert("You must be logged in");
 
     const data = new FormData();
     data.append("name", formData.name);
     data.append("description", formData.description);
     data.append("price", formData.price);
-    data.append("stock", formData.stock);       // ✅ added
-    data.append("category", formData.category); // ✅ added
+    data.append("stock", formData.stock);
+    data.append("category", formData.category);
     data.append("image", formData.image);
 
     try {
-      const response = await axios.post(buildApiUrl("/api/nfts"), data, {
+      await axios.post(buildApiUrl("/api/nfts"), data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -64,90 +73,112 @@ const AddNFT = () => {
   };
 
   return (
-    <div className=" flex justify-center items-center">
-  <div className="flex flex-col justify-center items-center bg-white shadow-lg rounded-2xl p-10 w-full max-w-md border border-gray-200">
-    <h1 className="text-3xl font-extrabold mb-6 text-purple-600 text-center">
-      Add New NFT
-    </h1>
-    <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        placeholder="NFT Name"
-        className="p-3 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        required
-      />
-      <input
-        type="text"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-        placeholder="NFT Description"
-        className="p-3 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        required
-      />
-      <input
-        type="number"
-        name="price"
-        value={formData.price}
-        onChange={handleChange}
-        placeholder="Price (ETH)"
-        className="p-3 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        required
-      />
-      <input
-        type="file"
-        name="image"
-        onChange={handleChange}
-        accept="image/*"
-        className="p-3 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        required
-      />
-        <input
-        type="number"
-        name="stock"
-        value={formData.stock}
-        onChange={handleChange}
-        placeholder="Stock (number of copies)"
-        className="p-3 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        required
-      />
-
-      <select
-        name="category"
-        value={formData.category}
-        onChange={handleChange}
-        className="p-3 rounded-lg border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        required
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+      bgcolor="#f3f4f6"
+      p={2}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          p: 4,
+          borderRadius: 3,
+          width: { xs: "100%", sm: 450 },
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
       >
-        <option value="">Select Category</option>
-        <option value="art">Art</option>
-        <option value="music">Music</option>
-        <option value="collectible">Collectible</option>
-        <option value="game">Game</option>
-      </select>
+        <Typography variant="h4" color="primary" fontWeight="bold" textAlign="center">
+          Add New NFT
+        </Typography>
 
-
-      {preview && (
-        <img
-          src={preview}
-          alt="Preview"
-          className="mt-2 w-full h-48 object-cover rounded-lg border border-gray-300 shadow-sm"
+        <TextField
+          label="NFT Name"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          fullWidth
         />
-      )}
 
-      <button
-        type="submit"
-        className="bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition font-semibold mt-3"
-      >
-        Add NFT
-      </button>
-    </form>
-  </div>
-</div>
+        <TextField
+          label="NFT Description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          required
+          multiline
+          rows={3}
+          fullWidth
+        />
 
+        <TextField
+          label="Price (ETH)"
+          name="price"
+          type="number"
+          value={formData.price}
+          onChange={handleChange}
+          required
+          fullWidth
+        />
+
+        <TextField
+          label="Stock (number of copies)"
+          name="stock"
+          type="number"
+          value={formData.stock}
+          onChange={handleChange}
+          required
+          fullWidth
+        />
+
+        <FormControl fullWidth required>
+          <InputLabel id="category-label">Category</InputLabel>
+          <Select
+            labelId="category-label"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+          >
+            <MenuItem value="art">Art</MenuItem>
+            <MenuItem value="music">Music</MenuItem>
+            <MenuItem value="collectible">Collectible</MenuItem>
+            <MenuItem value="game">Game</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Button variant="contained" component="label">
+          Upload Image
+          <input
+            type="file"
+            name="image"
+            hidden
+            accept="image/*"
+            onChange={handleChange}
+            required
+          />
+        </Button>
+
+        {preview && (
+          <Box
+            component="img"
+            src={preview}
+            alt="Preview"
+            width="100%"
+            height={200}
+            sx={{ objectFit: "cover", borderRadius: 1, border: "1px solid #ccc" }}
+          />
+        )}
+
+        <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
+          Add NFT
+        </Button>
+      </Paper>
+    </Box>
   );
 };
 

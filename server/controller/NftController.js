@@ -75,6 +75,21 @@ export const getAllNFTs = async (req, res) => {
   }
 };
 
+
+// Get NFT by ID
+export const getNFTById = async (req, res) => {
+  try {
+    const nft = await NFT.findById(req.params.id);
+    if (!nft) {
+      return res.status(404).json({ success: false, error: "NFT not found" });
+    }
+    res.json({ success: true, nft });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
+
+
 // @desc    Delete NFT by ID
 // @route   DELETE /api/nfts/:id
 // @access  Private

@@ -84,10 +84,8 @@ const MyNFTs = () => {
                 <h2 className="font-semibold text-lg text-gray-800 truncate">
                   {nft.name}
                 </h2>
-                <p className="text-purple-600 font-bold mt-1">{nft.price} ETH</p>
-                <p className="text-gray-500 text-sm mt-2 flex-grow">
-                  {nft.description || "No description available"}
-                </p>
+                <p className="text-purple-600 font-bold mt-1">PRICE: {nft.price}$</p>
+               
 
                 {/* Action buttons */}
                 <div className="mt-4 flex gap-3">
