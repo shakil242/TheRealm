@@ -19,8 +19,6 @@ const AddNFT = () => {
     description: "",
     image: null,
     price: "",
-    stock: "",
-    category: "",
   });
 
   const [preview, setPreview] = useState(null);
@@ -52,7 +50,7 @@ const AddNFT = () => {
     data.append("name", formData.name);
     data.append("description", formData.description);
     data.append("price", formData.price);
-    data.append("stock", formData.stock);
+   
     data.append("category", formData.category);
     data.append("image", formData.image);
 
@@ -64,7 +62,7 @@ const AddNFT = () => {
         },
       });
       alert("NFT added successfully!");
-      setFormData({ name: "", description: "", image: null, price: "", stock: "", category: "" });
+      setFormData({ name: "", description: "", image: null, price: "",  category: "" });
       setPreview(null);
     } catch (err) {
       console.error(err.response || err);
@@ -126,15 +124,7 @@ const AddNFT = () => {
           fullWidth
         />
 
-        <TextField
-          label="Stock (number of copies)"
-          name="stock"
-          type="number"
-          value={formData.stock}
-          onChange={handleChange}
-          required
-          fullWidth
-        />
+        
 
         <FormControl fullWidth required>
           <InputLabel id="category-label">Category</InputLabel>

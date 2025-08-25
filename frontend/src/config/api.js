@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
   UPDATE_VENDOR: "/api/user/role/:id",
   UPDATE_STATUS: "/api/user/status/:userId",
   DELETE_VENDOR: "/api/vendors/:id", // Admin approves/rejects moderators/users
+  REQUEST_MODERATOR:"/api/user/request-moderator",
 
   // NFT endpoints
   ADD_NFT: "/api/nfts",           // Add NFT
@@ -24,12 +25,15 @@ export const API_ENDPOINTS = {
   GET_ALL_NFTS: "/api/nfts/all",  // Public for shop
   GET_NFT_BY_ID: "/api/nfts/:id", // 👈 NEW — Get NFT by ID
   UPDATE_NFT_STATUS: "/api/nfts/:id/status", // Approve NFT
-  DELETE_NFT: "/api/nfts/:id",   // Delete NFT
+  DELETE_NFT: "/api/nfts/:id",   // Delete NFT,
+  UPDATE_NFT:"/api/nfts/update-nft/:id",
 
 
   //
   PLACE_ORDER:"/api/orders/order-placed",
   MY_ORDERS:"/api/orders/my-orders",
-  GET_SPECIFIC_CREATOR_ORDER:"/api/orders/creator/:userId",
-  GET_ALL_ORDERS:"/api/orders/all-orders"
+  GET_SPECIFIC_CREATOR_ORDER: "/api/orders/creator",
+  GET_ALL_ORDERS:"/api/orders/all-orders",
+  CONFIRM_ORDER:"/api/orders/:orderId/status",
+  NFT_RESELL: "/api/nfts/:nftId/resell",
 };

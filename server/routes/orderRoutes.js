@@ -1,17 +1,15 @@
 // routes/orderRoutes.js
 import express from "express";
-
 import { protect } from "../middleware/authMiddleware.js";
-import { createOrder, getAllOrders, getOrdersByCreators, getUserOrders } from "../controller/orderController.js";
+import { createOrder, getAllOrders, getOrdersByCreators, getUserOrders, updateOrderStatus } from "../controller/orderController.js";
 
 
 const router = express.Router();
 
-// Create a new order (protected route)
-router.post("/order-placed",protect ,createOrder);
+router.post("/order-placed", protect,createOrder);
 router.get("/my-orders", protect, getUserOrders);
-router.get("/creator/:userId", getOrdersByCreators);
-router.get("/all-orders",getAllOrders)
-
+router.get("/creator", protect, getOrdersByCreators);
+router.get("/all-orders", getAllOrders);
+router.put("/:orderId/status", protect, updateOrderStatus);
 
 export default router;

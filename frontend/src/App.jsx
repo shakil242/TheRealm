@@ -38,6 +38,8 @@ import WishlistPage from "./pages/WishlistPage";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import IslandLocations from "./pages/IslandLocations";
+import Purchases from "./pages/MyPurchases";
+
 
 // Admin Pages
 import Dashboard from "./scenes/Dashboard";
@@ -91,6 +93,7 @@ function App() {
             <Route path="hyperion-event-stadium" element={<HyperionEventStadium />} />
             <Route path="fracs-collection" element={<FRACS />} />
             <Route path="profile" element={<Profile />} />
+              <Route path="/purchases" element={<Purchases />} /> 
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="wishlist-page" element={<WishlistPage />} />
             <Route path="cart" element={<Cart />} />

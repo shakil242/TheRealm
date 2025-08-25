@@ -1,30 +1,22 @@
-import { error } from "console";
 import NFT from "../model/nft.js";
 import multer from "multer";
 import path from "path";
+import Order from "../model/order.js";
+import mongoose from "mongoose";
 
-// Configure multer storage
+// Multer storage
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // folder to store images
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // unique filename
-  },
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
 });
 
 export const upload = multer({ storage });
 
-// @desc    Add a new NFT
-// @route   POST /api/nfts
-// @access  Private
+// Add a new NFT
 export const addNFT = async (req, res) => {
   try {
-    const { name, description, price, stock } = req.body;
-
-    if (!req.file) {
-      return res.status(400).json({ success: false, error: "Image file is required" });
-    }
+    const { name, description, price } = req.body;
+    if (!req.file) return res.status(400).json({ success: false, error: "Image file is required" });
 
     const nft = new NFT({
       name,
@@ -32,8 +24,9 @@ export const addNFT = async (req, res) => {
       price: Number(price),
       image: req.file.filename,
       creator: req.user.id,
+      owner: req.user.id,
       status: "pending", // default pending
-      stock: stock ? Number(stock) : 1, // use stock if provided, else 1
+      isListed: false,
     });
 
     await nft.save();
@@ -44,30 +37,28 @@ export const addNFT = async (req, res) => {
   }
 };
 
-// @desc    Get NFTs for current user
-// @route   GET /api/nfts/my
-// @access  Private
+// Get NFTs owned or created by current user
 export const getMyNFTs = async (req, res) => {
   try {
-    const nfts = await NFT.find({ creator: req.user.id })
-    .sort({ createdAt: -1 })
-    
-    .select("name description price image status stock category createdAt updatedAt")
+    const nfts = await NFT.find({owner: req.user.id })
+      .sort({ createdAt: -1 })
+      .select("name description price image status category createdAt updatedAt isListed");
+
     res.json({ success: true, nfts });
   } catch (err) {
     console.error("Get My NFTs error:", err);
     res.status(500).json({ success: false, error: "Server error" });
   }
 };
-// get all user nfts to display on shop
+
+// Get all NFTs (for shop)
 export const getAllNFTs = async (req, res) => {
   try {
     const nfts = await NFT.find()
+      .sort({ createdAt: -1 })
+      .populate("creator", "role username")
+      .select("name description price image status category creator createdAt updatedAt isListed");
 
-    .sort({ createdAt: -1 })
-    .populate("creator", "role username")
-    .select("name description price image status stock  category creator createdAt updatedAt");
-     // latest first
     res.json({ success: true, nfts });
   } catch (err) {
     console.error("Get All NFTs error:", err);
@@ -75,30 +66,24 @@ export const getAllNFTs = async (req, res) => {
   }
 };
 
-
 // Get NFT by ID
 export const getNFTById = async (req, res) => {
   try {
     const nft = await NFT.findById(req.params.id);
-    if (!nft) {
-      return res.status(404).json({ success: false, error: "NFT not found" });
-    }
+    if (!nft) return res.status(404).json({ success: false, error: "NFT not found" });
     res.json({ success: true, nft });
   } catch (error) {
     res.status(500).json({ success: false, error: "Server error" });
   }
 };
 
-
-// @desc    Delete NFT by ID
-// @route   DELETE /api/nfts/:id
-// @access  Private
+// Delete NFT
 export const deleteNFT = async (req, res) => {
   try {
     const nft = await NFT.findById(req.params.id);
     if (!nft) return res.status(404).json({ success: false, error: "NFT not found" });
 
-    if (nft.creator.toString() !== req.user.id) {
+    if (String(nft.creator) !== String(req.user.id)) {
       return res.status(403).json({ success: false, error: "Not authorized" });
     }
 
@@ -109,25 +94,109 @@ export const deleteNFT = async (req, res) => {
     res.status(500).json({ success: false, error: "Server error" });
   }
 };
-export const updateNFTStatus=async(req,res)=>{
-  try{
-    let {status}=req.body
-      let { id } = req.params
-    if(!["pending","available","sold"].includes(status)){
-      return res.status(400).json({success:false,error:"invalid status valus"})
-    }
-    let nft=await NFT.findById(id)
-    if(!nft){
-      return res.status(404).json({success:false,error:"NFTnot found"})
-    }
-    nft.status=status
-    await nft.save()
-    res.json({ success: true, message: "NFT status updated successfully", nft });
 
-  }catch(error){
+// Update NFT status
+export const updateNFTStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    if (!["pending", "available", "sold"].includes(status)) {
+      return res.status(400).json({ success: false, error: "Invalid status value" });
+    }
+
+    const nft = await NFT.findById(id);
+    if (!nft) return res.status(404).json({ success: false, error: "NFT not found" });
+
+    nft.status = status;
+
+    // ✅ If status is available, mark it as listed
+    nft.isListed = status === "available";
+
+    await nft.save();
+
+    res.json({ success: true, message: "NFT status updated successfully", nft });
+  } catch (error) {
     console.error("Update NFT status error:", error);
     res.status(500).json({ success: false, error: "Server error" });
-
   }
+};
 
-}
+
+// Resell NFT
+export const resellNFT = async (req, res) => {
+  try {
+    const buyerId = req.user._id; // current user
+    const nftId = req.body.nftId || req.params.nftId;
+    const { price } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(nftId)) {
+      return res.status(400).json({ success: false, message: "Invalid NFT ID" });
+    }
+
+    // Find the order of this user for this NFT (pending or confirmed)
+    const order = await Order.findOne({
+      buyer: buyerId,
+      nft: nftId,
+      consumed: false,
+      status: { $in: ["pending", "confirmed"] },
+    });
+
+    if (!order) {
+      return res.status(400).json({ success: false, message: "You do not own this NFT" });
+    }
+
+    // Mark the order consumed
+    order.consumed = true;
+    await order.save();
+
+    // Find the NFT
+    const nft = await NFT.findById(nftId);
+    if (!nft) return res.status(404).json({ success: false, message: "NFT not found" });
+
+    // Update NFT for resale
+    // current user now owns it
+    nft.price = price;          // new resale price
+    nft.status = "available";   // available for sale
+    nft.isListed = true;        // listed in shop
+    await nft.save();
+
+    res.json({ success: true, message: "NFT listed for resale", nft });
+  } catch (err) {
+    console.error("Resell NFT error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Update an existing NFT
+export const updateNFT = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, price, category } = req.body;
+
+    const nft = await NFT.findById(id);
+    if (!nft) return res.status(404).json({ success: false, message: "NFT not found" });
+
+    // Only creator/owner can edit
+    if (String(nft.creator) !== String(req.user._id)) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    // Update fields if provided
+    if (name) nft.name = name;
+    if (description) nft.description = description;
+    if (price !== undefined) nft.price = Number(price);
+    if (category) nft.category = category;
+
+    // If new image uploaded via multer
+    if (req.file) {
+      nft.image = req.file.filename;
+    }
+
+    await nft.save();
+    res.status(200).json({ success: true, message: "NFT updated successfully", nft });
+  } catch (error) {
+    console.error("Update NFT error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

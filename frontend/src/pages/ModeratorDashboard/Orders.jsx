@@ -4,124 +4,156 @@ import axios from "axios";
 import { buildApiUrl, API_ENDPOINTS } from "../../config/api";
 import { useAuth } from "../../Context/AuthContext";
 
-
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
+  Paper,
+  Select,
+  MenuItem,
+  Typography,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState({ open: false, message: "", type: "success" });
+
   const { user } = useAuth();
-  const userId = user?._id;
 
   // Fetch all orders
-const fetchOrders = async () => {
-  setLoading(true);
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) return console.error("Token missing");
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return console.error("Token missing");
 
-    // Fetch orders for this moderator
-    const response = await axios.get(
-      buildApiUrl(API_ENDPOINTS.GET_SPECIFIC_CREATOR_ORDER.replace(
-        ":userId",
-        userId
-      )),
-      {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get(
+        buildApiUrl(API_ENDPOINTS.GET_SPECIFIC_CREATOR_ORDER.replace(":userId", user?._id)),
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.success) {
+        setOrders(response.data.orders);
+      } else {
+        console.error("Failed to fetch orders:", response.data.error);
       }
-    );
-
-    if (response.data.success) {
-      setOrders(response.data.orders);
-    } else {
-      console.error("Failed to fetch orders:", response.data.error);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching orders:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   useEffect(() => {
-    fetchOrders();
+    
+      fetchOrders();
+    
   }, []);
 
-  // Confirm an order
-  const handleConfirm = async (orderId) => {
+  // Update status
+  const handleStatusChange = async (orderId, newStatus) => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-        buildApiUrl(`${API_ENDPOINTS.CONFIRM_ORDER}/${orderId}`),
-        {},
+        buildApiUrl(API_ENDPOINTS.CONFIRM_ORDER.replace(":orderId", orderId)),
+        { status: newStatus }, // body
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.data.success) {
-        alert("Order confirmed successfully!");
         setOrders((prev) =>
           prev.map((o) =>
-            o._id === orderId ? { ...o, status: "confirmed" } : o
+            o._id === orderId ? { ...o, status: newStatus } : o
           )
         );
+        setToast({ open: true, message: "Order status updated!", type: "success" });
       } else {
-        alert("Failed to confirm order.");
+        setToast({ open: true, message: "Failed to update status.", type: "error" });
       }
     } catch (error) {
-      console.error("Error confirming order:", error);
-      alert("Something went wrong.");
+      console.error("Error updating status:", error);
+      setToast({ open: true, message: "Something went wrong.", type: "error" });
     }
   };
 
-  if (loading) return <p className="text-center">Loading orders...</p>;
-
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">All Orders</h2>
-      <table className="w-full border border-gray-300 rounded-lg shadow-md">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="p-3 border">Buyer</th>
-            <th className="p-3 border">NFT</th>
-            <th className="p-3 border">Price</th>
-            <th className="p-3 border">Status</th>
-            <th className="p-3 border">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.length > 0 ? (
-            orders.map((order) => (
-              <tr key={order._id} className="text-center">
-                <td className="p-3 border">{order.buyer?.username}</td>
-                <td className="p-3 border">{order.nft?.name}</td>
-                <td className="p-3 border">${order.nft?.price}</td>
-                <td className="p-3 border capitalize">{order.status}</td>
-                <td className="p-3 border">
-                  {order.status === "pending" ? (
-                    <button
-                      onClick={() => handleConfirm(order._id)}
-                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+      <Typography variant="h5" gutterBottom>
+        All Orders
+      </Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableRow>
+              <TableCell>Buyer</TableCell>
+              <TableCell>NFT</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell>Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell align="center" colSpan={4}>
+                  Loading orders...
+                </TableCell>
+              </TableRow>
+            ) : orders.length > 0 ? (
+              orders.map((order) => (
+                <TableRow key={order._id}>
+                  <TableCell>{order.buyer?.username}</TableCell>
+                  <TableCell>{order.nft?.name}</TableCell>
+                  <TableCell>${order.nft?.price}</TableCell>
+                  <TableCell>
+                    <Select
+                      value={order.status}
+                      onChange={(e) =>
+                        handleStatusChange(order._id, e.target.value)
+                      }
+                      size="small"
                     >
-                      Confirm
-                    </button>
-                  ) : (
-                    <span className="text-green-600 font-semibold">
-                      Confirmed
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td className="p-3 border text-center" colSpan="5">
-                No orders found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                      <MenuItem value="pending">Pending</MenuItem>
+                      <MenuItem value="confirmed">Confirmed</MenuItem>
+                      
+                      <MenuItem value="canceled">Canceled</MenuItem>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell align="center" colSpan={4}>
+                  No orders found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Snackbar Toast */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={3000}
+        onClose={() => setToast({ ...toast, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToast({ ...toast, open: false })}
+          severity={toast.type}
+          variant="filled"
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
