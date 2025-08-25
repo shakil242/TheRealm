@@ -1,11 +1,12 @@
 import express from "express";
-import { addNFT, getAllNFTs,getMyNFTs, deleteNFT, upload, updateNFTStatus, getNFTById } from "../controller/NftController.js";
+import { addNFT, getAllNFTs,getMyNFTs, deleteNFT, upload, updateNFTStatus, getNFTById, updateNFT, resellNFT } from "../controller/NftController.js";
 import { protect } from "../middleware/authMiddleware.js"; // middleware to check logged in user
 
 const router = express.Router();
 
 // Add NFT with image upload
 router.post("/", protect, upload.single("image"), addNFT);
+router.put("/update-nft/:id", protect, upload.single("image"), updateNFT);
 
 // Get NFTs for logged-in user
 router.get("/my", protect, getMyNFTs);
@@ -18,5 +19,6 @@ router.get("/:id", getNFTById);
 // Delete NFT
 router.delete("/:id", protect, deleteNFT);
 router.put("/:id/status",updateNFTStatus)
+router.put("/:id/resell", protect, resellNFT);
 
 export default router;
