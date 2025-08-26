@@ -20,11 +20,11 @@ const SidebarMUI = ({ activeTab, setActiveTab, isOpen, toggleSidebar }) => {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md")); // md and up = permanent
 
   const tabs = [
-    { key: "overview", label: "Overview", icon: <FaChartLine /> },
+     { key: "orders", label: "Orders", icon: <FaShoppingCart /> },
     { key: "nfts", label: "My NFTs", icon: <FaThList /> },
     { key: "pending", label: "Pending NFTs", icon: <FaClock /> },
     { key: "add", label: "Add NFT", icon: <FaPlus /> },
-    { key: "orders", label: "Orders", icon: <FaShoppingCart /> },
+   
   ];
 
   return (

@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Login (admin, moderator, user)
+  // Login (admin, vendor, user)
   const login = async (email, password) => {
     try {
       const res = await axios.post(

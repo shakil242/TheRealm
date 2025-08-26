@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import Authentication from "../components/Authentication";
 import { useAuth } from "../Context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { buildApiUrl } from "../config/api";
 
 const Profile = () => {
   const { user, isAuthenticated, loading, logout, refreshUser } = useAuth();
@@ -62,6 +61,13 @@ const Profile = () => {
             </p>
           </div>
 
+          {/* Pending Vendor Dialog */}
+          {user?.role === "vendor" && user?.status === "pending" && (
+            <div className="mx-6 mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+              Your request to become a moderator is still pending.
+            </div>
+          )}
+
           {/* Actions */}
           <div className="p-6 flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-6 py-3 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition transform hover:scale-105">
@@ -79,10 +85,10 @@ const Profile = () => {
               My Purchases
             </Link>
 
-            {/* Dashboard Button (for moderator/admin only) */}
-            {["moderator", "admin"].includes(user?.role) && (
+            {/* Dashboard Button (for vendor/admin only) */}
+            {["vendor", "admin"].includes(user?.role) && user?.status !== "pending" && (
               <Link
-                to={user?.role === "admin" ? "/dashboard" : "/moderator-dashboard"}
+                to={user?.role === "admin" ? "/dashboard" : "/vendor-dashboard"}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition transform hover:scale-105 text-center"
               >
                 Dashboard

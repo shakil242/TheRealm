@@ -83,7 +83,7 @@ export const deleteNFT = async (req, res) => {
     const nft = await NFT.findById(req.params.id);
     if (!nft) return res.status(404).json({ success: false, error: "NFT not found" });
 
-    if (String(nft.creator) !== String(req.user.id)) {
+    if (String(nft.owner) !== String(req.user.id)) {
       return res.status(403).json({ success: false, error: "Not authorized" });
     }
 
@@ -124,9 +124,17 @@ export const updateNFTStatus = async (req, res) => {
 
 
 // Resell NFT
+
+
+
+
 export const resellNFT = async (req, res) => {
   try {
-    const buyerId = req.user._id; // current user
+    const sellerId = req.user?._id; // current owner
+    if (!sellerId) {
+      return res.status(401).json({ success: false, message: "User not authenticated" });
+    }
+
     const nftId = req.body.nftId || req.params.nftId;
     const { price } = req.body;
 
@@ -134,39 +142,33 @@ export const resellNFT = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid NFT ID" });
     }
 
-    // Find the order of this user for this NFT (pending or confirmed)
-    const order = await Order.findOne({
-      buyer: buyerId,
-      nft: nftId,
-      consumed: false,
-      status: { $in: ["pending", "confirmed"] },
-    });
-
-    if (!order) {
-      return res.status(400).json({ success: false, message: "You do not own this NFT" });
-    }
-
-    // Mark the order consumed
-    order.consumed = true;
-    await order.save();
-
     // Find the NFT
     const nft = await NFT.findById(nftId);
     if (!nft) return res.status(404).json({ success: false, message: "NFT not found" });
 
-    // Update NFT for resale
-    // current user now owns it
-    nft.price = price;          // new resale price
-    nft.status = "available";   // available for sale
-    nft.isListed = true;        // listed in shop
+    // Make sure current user actually owns it
+    if (!nft.owner.equals(sellerId)) {
+      return res.status(400).json({ success: false, message: "You do not own this NFT" });
+    }
+
+    // Update NFT to be listed for resale
+    nft.price = price;        // set new resale price
+    nft.status = "pending"; // available for purchase
+    nft.isListed = true;      // show in marketplace
     await nft.save();
 
-    res.json({ success: true, message: "NFT listed for resale", nft });
+    // No new order is created, ownership stays with the seller
+    res.json({
+      success: true,
+      message: "NFT listed for resale in the marketplace",
+      nft,
+    });
   } catch (err) {
     console.error("Resell NFT error:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 // Update an existing NFT
 export const updateNFT = async (req, res) => {
@@ -178,7 +180,7 @@ export const updateNFT = async (req, res) => {
     if (!nft) return res.status(404).json({ success: false, message: "NFT not found" });
 
     // Only creator/owner can edit
-    if (String(nft.creator) !== String(req.user._id)) {
+    if (String(nft.owner) !== String(req.user._id)) {
       return res.status(403).json({ success: false, message: "Not authorized" });
     }
 

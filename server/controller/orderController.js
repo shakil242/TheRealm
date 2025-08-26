@@ -2,50 +2,76 @@ import Order from "../model/order.js";
 import NFT from "../model/nft.js";
 
 // Create an order
+// Example in createOrder controller
 export const createOrder = async (req, res) => {
   try {
-    const { nftId } = req.body;
+    const { nftId, } = req.body;
     const buyerId = req.user._id;
 
+    // Fetch the NFT
     const nft = await NFT.findById(nftId);
-    if (!nft) return res.status(404).json({ success: false, message: "NFT not found" });
-    if (!nft.isListed) return res.status(400).json({ success: false, message: "NFT not listed" });
+    if (!nft) 
+      return res.status(404).json({ success: false, message: "NFT not found" });
 
-    // Transfer ownership
+    // Check if NFT is already sold / unavailable
+    if (!nft.isListed || nft.status === "sold") {
+      return res.status(400).json({ success: false, message: "NFT is not available" });
+    }
+
+    // Create the order
+    const order = new Order({
+      nft: nft._id,
+      buyer: buyerId,
+      seller: nft.owner, // original owner
+      price: nft.price,
+      status: "pending", // immediately mark as confirmed
+    });
+
+    await order.save();
+
+    // Update NFT ownership immediately
+    nft.owner = buyerId;
     nft.status = "sold";
     nft.isListed = false;
     await nft.save();
 
-    const order = new Order({
-      buyer: buyerId,
-      nft: nft._id,
-      price: nft.price,
-      status: "pending",
-      consumed: false,
-    });
-    await order.save();
-
-    res.status(201).json({ success: true, message: "Order placed successfully", order });
+    res.json({ success: true, order });
   } catch (error) {
     console.error("Create order error:", error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 // Get user orders
 export const getUserOrders = async (req, res) => {
   try {
     const buyerId = req.user._id;
-    const orders = await Order.find({ buyer: buyerId, status: { $in: ["pending","confirmed"] }, consumed: false })
-      .populate("nft")
+
+    // Fetch orders where buyer is the current user
+    const orders = await Order.find({
+      buyer: buyerId,
+      consumed: false,
+      status: { $in: ["pending", "confirmed"] },
+    })
+      .populate({
+        path: "nft",
+        match: { owner: buyerId }, // only NFTs currently owned by this user
+      })
       .sort({ createdAt: -1 });
 
-    res.status(200).json({ success: true, orders });
+    // Filter out orders where nft population failed (e.g., NFT not owned anymore)
+    const filteredOrders = orders.filter(o => o.nft !== null);
+
+    res.status(200).json({ success: true, orders: filteredOrders });
   } catch (error) {
     console.error("Get user orders error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+
 
 // Update order status
 export const updateOrderStatus = async (req, res) => {
@@ -54,21 +80,17 @@ export const updateOrderStatus = async (req, res) => {
     const { status } = req.body;
     const allowed = ["pending", "confirmed", "canceled"];
 
-    if (!allowed.includes(status))
+    if (!allowed.includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid status" });
-
-    const order = await Order.findById(orderId).populate("nft");
-    if (!order)
-      return res.status(404).json({ success: false, message: "Order not found" });
-
-    order.status = status;
-
-    if (status === "confirmed") {
-      const nft = order.nft; // get the NFT from the populated order
-      nft.owner = order.buyer; // transfer ownership
-      await nft.save();
     }
 
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    // Only update the order status; do NOT change NFT ownership
+    order.status = status;
     await order.save();
 
     res.json({ success: true, order });
@@ -77,6 +99,7 @@ export const updateOrderStatus = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 // Get all orders (admin)
@@ -94,23 +117,23 @@ export const getAllOrders = async (req, res) => {
   }
 };
 // Get orders by NFT creator (for sales dashboard)
-export const getOrdersByCreators = async (req, res) => {
+export const getOrdersByOwner = async (req, res) => {
   try {
-    const creatorId = req.user._id;
+    const ownerId = req.user._id;
 
-    // Find NFTs created by this user
-    const nfts = await NFT.find({ creator: creatorId }).select("_id");
-    const nftIds = nfts.map((n) => n._id);
-
-    // Find orders for those NFTs
-    const orders = await Order.find({ nft: { $in: nftIds } })
+    const orders = await Order.find({
+      seller: ownerId,
+      status: { $in: ["pending", "confirmed"] },
+    })
       .populate("nft", "name price status")
       .populate("buyer", "username email")
       .sort({ createdAt: -1 });
 
     res.json({ success: true, orders });
   } catch (error) {
-    console.error("Get orders by creator error:", error);
+    console.error("Get orders by owner error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+

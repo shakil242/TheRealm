@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // Import all dashboard components
-import Overview from "./Overview";
+
 import MyNFTs from "./MyNFTs";
 import AddNFT from "./AddNft";
 import PendingNFTs from "./PendingNFTs";
@@ -10,8 +10,8 @@ import SidebarMUI from "./Sidebar"; // ✅ Import MUI sidebar
 import { useAuth } from "../../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const ModeratorDashboard = () => {
-  const [activeTab, setActiveTab] = useState("overview");
+const VendorDashboard = () => {
+  const [activeTab, setActiveTab] = useState("orders");
   const [sidebarOpen, setSidebarOpen] = useState(true); // control MUI drawer
   const { logout, refreshUser } = useAuth();
   const navigate = useNavigate();
@@ -38,8 +38,8 @@ const ModeratorDashboard = () => {
       />
 
       {/* Main content */}
-      <main className="flex-1 p-6" style={{ marginLeft: sidebarOpen ? 256 : 0, transition: "margin-left 0.3s" }}>
-        {activeTab === "overview" && <Overview />}
+      <main className="flex-1 " style={{ marginLeft: sidebarOpen ? 256 : 0, transition: "margin-left 0.3s" }}>
+       
         {activeTab === "orders" && <Orders />}
         {activeTab === "nfts" && <MyNFTs />}
         {activeTab === "pending" && <PendingNFTs />}
@@ -49,4 +49,4 @@ const ModeratorDashboard = () => {
   );
 };
 
-export default ModeratorDashboard;
+export default VendorDashboard;

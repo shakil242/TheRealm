@@ -1,4 +1,4 @@
-// src/pages/Moderator/index.jsx
+// src/pages/vendor/index.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { buildApiUrl, API_ENDPOINTS } from "../../config/api";

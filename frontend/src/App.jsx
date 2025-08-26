@@ -49,13 +49,14 @@ import VendorRequest from "./scenes/VendorRequest";
 import NFTRequest from "./scenes/NftRequest";
 import AllNFTsAdmin from "./scenes/allNFTs";
 
-// Moderator Pages
-import ModeratorDashboard from "./pages/ModeratorDashboard";
+// vendor Pages
+
 
 // Auth
 import { AuthProvider } from "./Context/AuthContext";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import BuyNow from "./pages/BuyNow";
+import VendorDashboard from "./pages/ModeratorDashboard";
 
 function App() {
   return (
@@ -101,12 +102,12 @@ function App() {
             <Route path="island-locations" element={<IslandLocations />} />
           </Route>
 
-          {/* Moderator Routes */}
+          {/* vendor Routes */}
           <Route
-            path="/moderator-dashboard"
+            path="/vendor-dashboard"
             element={
-              <ProtectedRoute requiredRole="moderator">
-                <ModeratorDashboard />
+              <ProtectedRoute requiredRole="vendor">
+                < VendorDashboard/>
               </ProtectedRoute>
             }
           />

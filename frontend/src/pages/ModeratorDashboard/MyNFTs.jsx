@@ -1,3 +1,4 @@
+// src/pages/MyNFTs.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -37,27 +38,27 @@ const MyNFTs = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
- const fetchNFTs = async () => {
-  setLoading(true);
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_MY_NFTS), {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (response.data.success) {
-      // Filter NFTs with status "available"
-      const availableNFTs = response.data.nfts.filter(nft => nft.status === "available");
-      setNftList(availableNFTs);
-    } else {
-      toast.error(response.data.error || "Failed to load NFTs");
+  const fetchNFTs = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_MY_NFTS), {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.data.success) {
+        const availableNFTs = response.data.nfts.filter(
+          (nft) => nft.status === "available"
+        );
+        setNftList(availableNFTs);
+      } else {
+        toast.error(response.data.error || "Failed to load NFTs");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Server error. Try again!");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    toast.error(error.response?.data?.error || "Server error. Try again!");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchNFTs();
@@ -115,13 +116,20 @@ const MyNFTs = () => {
       const response = await axios.put(
         buildApiUrl(`/api/nfts/update-nft/${currentNFT._id}`),
         data,
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       if (response.data.success) {
         toast.success("NFT updated successfully!");
         setNftList((prev) =>
-          prev.map((nft) => (nft._id === currentNFT._id ? response.data.nft : nft))
+          prev.map((nft) =>
+            nft._id === currentNFT._id ? response.data.nft : nft
+          )
         );
         setEditDialogOpen(false);
       } else {
@@ -140,14 +148,14 @@ const MyNFTs = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 min-h-screen bg-gray-900 text-gray-200">
       <ToastContainer />
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">My NFTs</h1>
+      <h1 className="text-3xl font-bold mb-6 text-white">My NFTs</h1>
 
       {loading ? (
-        <p className="text-gray-500">Loading NFTs...</p>
+        <p className="text-gray-400">Loading NFTs...</p>
       ) : nftList.length === 0 ? (
-        <p className="text-gray-500">No NFTs found. Add some new ones!</p>
+        <p className="text-gray-400">No NFTs found. Add some new ones!</p>
       ) : (
         <>
           {/* NFT Cards */}
@@ -155,7 +163,7 @@ const MyNFTs = () => {
             {nftList.map((nft) => (
               <div
                 key={nft._id}
-                className="bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
+                className="bg-gray-800 border border-gray-700  hover:border-gray-500 transition overflow-hidden flex flex-col"
               >
                 <img
                   src={`http://localhost:5001/uploads/${nft.image}`}
@@ -163,12 +171,16 @@ const MyNFTs = () => {
                   className="w-full h-56 object-cover"
                 />
                 <div className="p-4 flex flex-col flex-grow">
-                  <h2 className="font-semibold text-lg text-gray-800 truncate">{nft.name}</h2>
-                  <p className="text-purple-600 font-bold mt-1">PRICE: {nft.price}$</p>
+                  <h2 className="font-semibold text-lg text-white truncate">
+                    {nft.name}
+                  </h2>
+                  <p className="text-indigo-400 font-bold mt-1">
+                    PRICE: {nft.price}$
+                  </p>
                   <div className="mt-4 flex gap-3">
                     <button
                       onClick={() => openEditDialog(nft)}
-                      className="w-1/2 bg-green-500 text-white py-2 hover:bg-green-700 transition"
+                      className="w-1/2 bg-green-600 text-white py-2 hover:bg-green-700 transition"
                     >
                       UPDATE
                     </button>
@@ -185,30 +197,60 @@ const MyNFTs = () => {
           </div>
 
           {/* NFT Table */}
-          <TableContainer component={Paper}>
+          <TableContainer
+            component={Paper}
+            sx={{
+              bgcolor: "#1e1e1e",
+              color: "white",
+              border: "1px solid #333",
+            }}
+          >
             <Table>
-              <TableHead>
+              <TableHead sx={{ bgcolor: "#2a2a2a" }}>
                 <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Price</TableCell>
-                  <TableCell>Stock</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell sx={{ color: "white" }}>Name</TableCell>
+                  <TableCell sx={{ color: "white" }}>Price</TableCell>
+                  <TableCell sx={{ color: "white" }}>Stock</TableCell>
+                  <TableCell sx={{ color: "white" }}>Description</TableCell>
+                  <TableCell sx={{ color: "white" }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {nftList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((nft) => (
-                  <TableRow key={nft._id}>
-                    <TableCell>{nft.name}</TableCell>
-                    <TableCell>${nft.price}</TableCell>
-                    <TableCell>{nft.stock}</TableCell>
-                    <TableCell>{nft.description}</TableCell>
-                    <TableCell>
-                      <Button color="primary" onClick={() => openEditDialog(nft)}>Edit</Button>
-                      <Button color="error" onClick={() => handleDelete(nft._id)}>Delete</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {nftList
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((nft) => (
+                    <TableRow
+                      key={nft._id}
+                      sx={{
+                        "&:hover": { bgcolor: "#2b2b2b" },
+                      }}
+                    >
+                      <TableCell sx={{ color: "gray" }}>{nft.name}</TableCell>
+                      <TableCell sx={{ color: "gray" }}>
+                        ${nft.price}
+                      </TableCell>
+                      <TableCell sx={{ color: "gray" }}>
+                        {nft.stock}
+                      </TableCell>
+                      <TableCell sx={{ color: "gray" }}>
+                        {nft.description}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          color="primary"
+                          onClick={() => openEditDialog(nft)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          color="error"
+                          onClick={() => handleDelete(nft._id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
             <TablePagination
@@ -219,26 +261,85 @@ const MyNFTs = () => {
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               rowsPerPageOptions={[5, 10, 25]}
+              sx={{ color: "white", bgcolor: "#1e1e1e" }}
             />
           </TableContainer>
         </>
       )}
 
       {/* Edit NFT Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>Edit NFT</DialogTitle>
-        <DialogContent className="flex flex-col gap-3">
-          <TextField label="Name" name="name" value={formData.name} onChange={handleFormChange} fullWidth />
-          <TextField label="Price" name="price" type="number" value={formData.price} onChange={handleFormChange} fullWidth />
-          <TextField label="Stock" name="stock" type="number" value={formData.stock} onChange={handleFormChange} fullWidth />
-          <TextField label="Description" name="description" value={formData.description} onChange={handleFormChange} fullWidth multiline rows={3} />
-          <input type="file" name="image" accept="image/*" onChange={handleFormChange} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="secondary">Cancel</Button>
-          <Button onClick={handleUpdateNFT} color="primary" variant="contained">Update</Button>
-        </DialogActions>
-      </Dialog>
+     <Dialog
+  open={editDialogOpen}
+  onClose={() => setEditDialogOpen(false)}
+  PaperProps={{ sx: { bgcolor: "#1e1e1e", color: "white" } }}
+>
+  <DialogTitle>Edit NFT</DialogTitle>
+  <DialogContent className="flex flex-col gap-4 mt-4">
+    <TextField
+      label="Name"
+      name="name"
+      value={formData.name}
+      onChange={handleFormChange}
+      fullWidth
+      InputLabelProps={{ style: { color: "#bbb",marginTop:"5px" } }}
+      InputProps={{ style: { color: "white" } }}
+    />
+    <TextField
+      label="Price"
+      name="price"
+      type="number"
+      value={formData.price}
+      onChange={handleFormChange}
+      fullWidth
+      InputLabelProps={{ style: { color: "#bbb" } }}
+      InputProps={{ style: { color: "white" } }}
+    />
+    <TextField
+      label="Stock"
+      name="stock"
+      type="number"
+      value={formData.stock}
+      onChange={handleFormChange}
+      fullWidth
+      InputLabelProps={{ style: { color: "#bbb" } }}
+      InputProps={{ style: { color: "white" } }}
+    />
+    <TextField
+      label="Description"
+      name="description"
+      value={formData.description}
+      onChange={handleFormChange}
+      fullWidth
+      multiline
+      rows={3}
+      InputLabelProps={{ style: { color: "#bbb" } }}
+      InputProps={{ style: { color: "white" } }}
+    />
+    <input
+      type="file"
+      name="image"
+      accept="image/*"
+      onChange={handleFormChange}
+      className="mt-2 text-gray-300"
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button
+      onClick={() => setEditDialogOpen(false)}
+      sx={{ color: "#bbb" }}
+    >
+      Cancel
+    </Button>
+    <Button
+      onClick={handleUpdateNFT}
+      variant="contained"
+      sx={{ bgcolor: "indigo.600", "&:hover": { bgcolor: "indigo.800" } }}
+    >
+      Update
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </div>
   );
 };

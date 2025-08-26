@@ -10,7 +10,7 @@ const Dashboard = () => {
 
   const [stats, setStats] = useState({
     users: 0,
-    moderators: 0,
+    vendors: 0,
     orders: 12,
     wishlist: 5,
     reviews: 3,
@@ -22,7 +22,7 @@ const Dashboard = () => {
     navigate("/"); // Redirect to home
   };
 
-  // Fetch user & moderator counts
+  // Fetch user & vendor counts
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -30,7 +30,7 @@ const Dashboard = () => {
         setStats((prev) => ({
           ...prev,
           users: response.data.users,
-          moderators: response.data.moderators,
+          vendors: response.data.vendors,
         }));
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -74,8 +74,8 @@ const Dashboard = () => {
         </div>
         <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
           <FaChartLine className="text-4xl text-green-500 mb-2" />
-          <h3 className="text-xl font-semibold text-gray-800">Moderators</h3>
-          <p className="text-gray-500 mt-1 text-lg">{stats.moderators}</p>
+          <h3 className="text-xl font-semibold text-gray-800">vendors</h3>
+          <p className="text-gray-500 mt-1 text-lg">{stats.vendors}</p>
         </div>
         <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
           <FaChartLine className="text-4xl text-blue-500 mb-2" />

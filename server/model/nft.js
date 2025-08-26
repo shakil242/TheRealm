@@ -23,7 +23,7 @@ const nftSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "available", "sold"],
-      default: "available",
+      default: "pending",
     },
 
  
