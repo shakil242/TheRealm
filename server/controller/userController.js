@@ -1,6 +1,6 @@
 import User from "../model/user.js";
 
-// Get all users including moderators
+// Get all users including vendors
 export const getAllUsers = async (req, res) => {
   try {
     // Fetch all users (no role filter)
@@ -52,7 +52,7 @@ export const updateUserRole = async (req, res) => {
     });
   }
 };
-// Update user status (e.g., approve moderator)
+// Update user status (e.g., approve vendor)
 export const updateUserStatus = async (req, res) => {
   try {
     const { userId } = req.params; // user ID from URL
@@ -91,8 +91,8 @@ export const updateUserStatus = async (req, res) => {
     });
   }
 };
-// Request to become moderator
-export const requestModerator = async (req, res) => {
+// Request to become vendor
+export const requestvendor = async (req, res) => {
   try {
     const userId = req.user._id; // get logged-in user from JWT
 
@@ -108,7 +108,7 @@ export const requestModerator = async (req, res) => {
     if (user.status === "pending")
       return res
         .status(400)
-        .json({ success: false, message: "Your moderator request is already pending" });
+        .json({ success: false, message: "Your vendor request is already pending" });
 
     // Update role and status
     
@@ -117,9 +117,9 @@ export const requestModerator = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Moderator request submitted", user });
+      .json({ success: true, message: "vendor request submitted", user });
   } catch (error) {
-    console.error("Request moderator error:", error);
+    console.error("Request vendor error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

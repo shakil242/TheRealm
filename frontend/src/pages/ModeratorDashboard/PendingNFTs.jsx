@@ -37,12 +37,13 @@ const PendingNFTs = () => {
   }, []);
 
   return (
-    <div className="   text-white">
+    <div className="bg-gray-900">
+    <div className="px-6 py-10 min-h-screen  text-white">
       <ToastContainer />
 
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-extrabold text-black bg-clip-text  drop-shadow-lg">
+        <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-sm">
           Pending NFTs
         </h1>
         <p className="text-gray-400 mt-2 text-sm md:text-base">
@@ -57,51 +58,50 @@ const PendingNFTs = () => {
         </p>
       ) : pendingNFTs.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-20">
-          <p className="text-gray-500 text-lg">🚀 You have no pending NFTs.</p>
-          <p className="text-gray-400 text-sm mt-2">
+          <p className="text-gray-300 text-lg">🚀 You have no pending NFTs.</p>
+          <p className="text-gray-500 text-sm mt-2">
             Add new NFTs and they’ll appear here for review.
           </p>
         </div>
       ) : (
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {pendingNFTs.map((nft) => (
             <div
               key={nft._id}
-              className="relative bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden transform hover:-translate-y-2 hover:shadow-2xl transition duration-300"
+              className="bg-gray-800 border border-gray-700 rounded-lg shadow-md hover:shadow-xl transition duration-300"
             >
-              {/* Image */}
-              <div className="h-52 w-full overflow-hidden">
+              {/* Image with aspect ratio */}
+              <div className="aspect-[4/3] w-full bg-gray-700 overflow-hidden">
                 <img
                   src={`http://localhost:5001/uploads/${nft.image}`}
                   alt={nft.name}
-                  className="w-full h-full object-cover "
+                  className="h-full w-full object-cover"
                 />
               </div>
 
               {/* NFT Info */}
-              <div className="p-5">
-                <h2 className="font-bold text-lg text-black truncate">
-                  {nft.name}
-                </h2>
-                <p className="text-black font-semibold text-sm mt-1">
-                  {nft.price} ETH
-                </p>
-                
+              <div className="p-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="font-semibold text-white truncate">
+                    {nft.name}
+                  </h2>
+                  <p className="text-indigo-400 font-bold text-sm">
+                    {nft.price} ETH
+                  </p>
+                </div>
 
                 {/* Status Badge */}
                 <div className="mt-4">
-                  <span className="px-4 py-2 text-xs font-semibold rounded-full bg-yellow-400/90 text-black shadow-md">
+                  <span className="px-3 py-1 text-xs font-medium rounded-md bg-yellow-400 text-gray-900">
                     ⏳ Pending Approval
                   </span>
                 </div>
               </div>
-
-              {/* Glow Effect */}
-              <div className="absolute inset-0 rounded-2xl ring-2 ring-purple-500/20 pointer-events-none"></div>
             </div>
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 };

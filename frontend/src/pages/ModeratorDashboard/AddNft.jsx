@@ -8,7 +8,6 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Paper,
 } from "@mui/material";
 import axios from "axios";
 import { buildApiUrl } from "../../config/api";
@@ -19,6 +18,7 @@ const AddNFT = () => {
     description: "",
     image: null,
     price: "",
+    category: "",
   });
 
   const [preview, setPreview] = useState(null);
@@ -50,7 +50,6 @@ const AddNFT = () => {
     data.append("name", formData.name);
     data.append("description", formData.description);
     data.append("price", formData.price);
-   
     data.append("category", formData.category);
     data.append("image", formData.image);
 
@@ -62,7 +61,7 @@ const AddNFT = () => {
         },
       });
       alert("NFT added successfully!");
-      setFormData({ name: "", description: "", image: null, price: "",  category: "" });
+      setFormData({ name: "", description: "", image: null, price: "", category: "" });
       setPreview(null);
     } catch (err) {
       console.error(err.response || err);
@@ -72,48 +71,47 @@ const AddNFT = () => {
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-      bgcolor="#f3f4f6"
-      p={2}
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+        maxWidth: 800,
+        mx: "auto",
+        py: 4,
+        px: 2,
+        bgcolor: "#fff", // ebay style -> white background
+      }}
     >
-      <Paper
-        elevation={6}
-        sx={{
-          p: 4,
-          borderRadius: 3,
-          width: { xs: "100%", sm: 450 },
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Typography variant="h4" color="primary" fontWeight="bold" textAlign="center">
-          Add New NFT
-        </Typography>
+      <Typography variant="h5" fontWeight="600" gutterBottom>
+        Create a New NFT Listing
+      </Typography>
 
-        <TextField
-          label="NFT Name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          fullWidth
-        />
+      {/* Name */}
+      <TextField
+        label="NFT Title"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        required
+        fullWidth
+      />
 
-        <TextField
-          label="NFT Description"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          required
-          multiline
-          rows={3}
-          fullWidth
-        />
+      {/* Description */}
+      <TextField
+        label="Description"
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+        required
+        multiline
+        rows={4}
+        fullWidth
+      />
 
+      {/* Price + Category in a row */}
+      <Box display="flex" gap={2}>
         <TextField
           label="Price (ETH)"
           name="price"
@@ -124,12 +122,9 @@ const AddNFT = () => {
           fullWidth
         />
 
-        
-
         <FormControl fullWidth required>
-          <InputLabel id="category-label">Category</InputLabel>
+          <InputLabel>Category</InputLabel>
           <Select
-            labelId="category-label"
             name="category"
             value={formData.category}
             onChange={handleChange}
@@ -140,34 +135,51 @@ const AddNFT = () => {
             <MenuItem value="game">Game</MenuItem>
           </Select>
         </FormControl>
+      </Box>
 
-        <Button variant="contained" component="label">
-          Upload Image
-          <input
-            type="file"
-            name="image"
-            hidden
-            accept="image/*"
-            onChange={handleChange}
-            required
-          />
-        </Button>
+      {/* Upload */}
+      <Button variant="outlined" component="label" sx={{ alignSelf: "flex-start" }}>
+        Upload Image
+        <input
+          type="file"
+          name="image"
+          hidden
+          accept="image/*"
+          onChange={handleChange}
+          required
+        />
+      </Button>
 
-        {preview && (
-          <Box
-            component="img"
-            src={preview}
-            alt="Preview"
-            width="100%"
-            height={200}
-            sx={{ objectFit: "cover", borderRadius: 1, border: "1px solid #ccc" }}
-          />
-        )}
+      {/* Preview */}
+      {preview && (
+        <Box
+          component="img"
+          src={preview}
+          alt="Preview"
+          sx={{
+            width: "100%",
+            maxHeight: 300,
+            objectFit: "contain",
+            border: "1px solid #ddd",
+            p: 1,
+          }}
+        />
+      )}
 
-        <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
-          Add NFT
-        </Button>
-      </Paper>
+      {/* Submit */}
+      <Button
+        type="submit"
+        variant="contained"
+        sx={{
+          bgcolor: "#3665f3", // ebay blue
+          "&:hover": { bgcolor: "#264ec2" },
+          fontWeight: "bold",
+          alignSelf: "flex-start",
+          mt: 2,
+        }}
+      >
+        List NFT
+      </Button>
     </Box>
   );
 };

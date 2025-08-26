@@ -102,7 +102,7 @@ const updateStatus = async (id, status) => {
                 <TableCell><b>Image</b></TableCell>
                 <TableCell><b>Name</b></TableCell>
                 <TableCell><b>Price</b></TableCell>
-                <TableCell><b>Description</b></TableCell>
+                
                 <TableCell><b>Actions</b></TableCell>
               </TableRow>
             </TableHead>
@@ -118,7 +118,7 @@ const updateStatus = async (id, status) => {
                   </TableCell>
                   <TableCell>{nft.name}</TableCell>
                   <TableCell>{nft.price} ETH</TableCell>
-                  <TableCell>{nft.description}</TableCell>
+                  
                   <TableCell>
                     <Box display="flex" gap={1}>
                       <Button

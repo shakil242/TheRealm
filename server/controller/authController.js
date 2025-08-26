@@ -62,7 +62,7 @@ export const registerUser = async (req, res) => {
        email, 
        password, 
        role,
-       status: role === "moderator" ? "pending" : "active",  });
+       status: role === "vendor" ? "pending" : "active",  });
     await user.save();
 
     // Generate token and send response
@@ -91,7 +91,6 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validation
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -99,7 +98,6 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Check for user
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(401).json({
@@ -108,7 +106,6 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -117,18 +114,18 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Generate token
     const token = generateToken(res, user._id);
 
     const userResponse = user.toObject();
     delete userResponse.password;
 
-    // Include status in response
+    // Include status inside user object
+    userResponse.status = user.status || "active";
+
     res.json({
       success: true,
       token,
       user: userResponse,
-      status: user.status || "active",
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -138,6 +135,7 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
 
 
 

@@ -212,7 +212,7 @@ const Signup = ({ onClose }) => {
           className="w-full px-4 py-3 bg-gray-800 border border-purple-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
         >
           <option value="user">User</option>
-          <option value="moderator">Moderator</option>
+          <option value="vendor">vendor</option>
         </select>
       </div>
 

@@ -24,42 +24,49 @@ const Login = ({ onClose }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    try {
-      const result = await login(formData.email, formData.password);
+  try {
+    const result = await login(formData.email, formData.password);
 
-      if (result.success) {
-        toast.success("Login successful!", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-        });
+    if (result.success) {
+      toast.success("Login successful!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+      });
 
-        const userRole = result.user?.role;
+      const userRole = result.user?.role;
+      const userStatus = result.user?.status; // check vendor status
 
-        // Redirect based on role
-        if (userRole === "admin") {
-          navigate("/dashboard"); // admin dashboard
-        } else if (userRole === "moderator") {
-          navigate("/moderator-dashboard"); // moderator dashboard
+      // Redirect based on role and status
+      if (userRole === "admin") {
+        navigate("/dashboard"); // admin dashboard
+      } else if (userRole === "vendor") {
+        if (userStatus === "pending") {
+          toast.info("Your vendor request is still pending.");
+          navigate("/profile"); // redirect to homepage instead
         } else {
-          navigate("/"); // regular user homepage
+          navigate("/vendor-dashboard"); // vendor approved
         }
-
-        if (onClose) onClose();
       } else {
-        toast.error(result.error || "Login failed");
+        navigate("/"); // regular user homepage
       }
-    } catch (error) {
-      toast.error(error.message || "An error occurred during login");
-    } finally {
-      setIsLoading(false);
+
+      if (onClose) onClose();
+    } else {
+      toast.error(result.error || "Login failed");
     }
-  };
+  } catch (error) {
+    toast.error(error.message || "An error occurred during login");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

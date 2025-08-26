@@ -14,16 +14,16 @@ import {
 import axios from "axios";
 import { buildApiUrl, API_ENDPOINTS } from "../../config/api";
 
-const ModeratorRequests = () => {
+const vendorRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch pending moderator requests
+  // Fetch pending vendor requests
   const fetchRequests = async () => {
     try {
       const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS)); // get all users
       const pendingMods = res.data.users.filter(
-       (user) => ["moderator", "user"].includes(user.role) && user.status === "pending"
+       (user) => ["vendor", "user"].includes(user.role) && user.status === "pending"
 
       );
       setRequests(pendingMods);
@@ -38,8 +38,8 @@ const ModeratorRequests = () => {
     fetchRequests();
   }, []);
 
-  // Approve a moderator
-  const approveModerator = async (userId) => {
+  // Approve a vendor
+  const approvevendor = async (userId) => {
     try {
       const res = await axios.put(
         buildApiUrl(API_ENDPOINTS.UPDATE_STATUS.replace(":userId", userId)),
@@ -50,16 +50,16 @@ const ModeratorRequests = () => {
         setRequests((prev) => prev.filter((user) => user._id !== userId));
       }
     } catch (err) {
-      console.error("Failed to approve moderator:", err.response?.data || err.message);
+      console.error("Failed to approve vendor:", err.response?.data || err.message);
     }
   };
 
-  if (loading) return <p>Loading moderator requests...</p>;
+  if (loading) return <p>Loading vendor requests...</p>;
 
   return (
     <Box p={3}>
       <Typography variant="h4" fontWeight="bold" mb={3}>
-        Moderator Requests
+        vendor Requests
       </Typography>
 
       <TableContainer component={Paper}>
@@ -87,7 +87,7 @@ const ModeratorRequests = () => {
                     variant="contained"
                     color="primary"
                     size="small"
-                    onClick={() => approveModerator(user._id)}
+                    onClick={() => approvevendor(user._id)}
                   >
                     Approve
                   </Button>
@@ -97,7 +97,7 @@ const ModeratorRequests = () => {
             {requests.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} align="center">
-                  No pending moderator requests.
+                  No pending vendor requests.
                 </TableCell>
               </TableRow>
             )}
@@ -108,4 +108,4 @@ const ModeratorRequests = () => {
   );
 };
 
-export default ModeratorRequests;
+export default vendorRequests;

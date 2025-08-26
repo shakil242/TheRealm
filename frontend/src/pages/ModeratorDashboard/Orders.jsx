@@ -1,4 +1,4 @@
-// src/pages/Moderator/Orders.jsx
+// src/pages/vendor/Orders.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { buildApiUrl, API_ENDPOINTS } from "../../config/api";
@@ -17,6 +17,7 @@ import {
   Typography,
   Snackbar,
   Alert,
+  Box,
 } from "@mui/material";
 
 const Orders = () => {
@@ -53,9 +54,7 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    
-      fetchOrders();
-    
+    fetchOrders();
   }, []);
 
   // Update status
@@ -64,7 +63,7 @@ const Orders = () => {
       const token = localStorage.getItem("token");
       const res = await axios.put(
         buildApiUrl(API_ENDPOINTS.CONFIRM_ORDER.replace(":orderId", orderId)),
-        { status: newStatus }, // body
+        { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -85,59 +84,90 @@ const Orders = () => {
   };
 
   return (
-    <div>
-      <Typography variant="h5" gutterBottom>
-        All Orders
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-            <TableRow>
-              <TableCell>Buyer</TableCell>
-              <TableCell>NFT</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="flex-start"
+      minHeight="100vh"
+      sx={{ bgcolor: "#101828", color: "#e0e0e0", py: 4 }}
+    >
+      <Box width="100%" maxWidth="950px">
+        <Typography variant="h5" align="center" gutterBottom fontWeight="bold" color="white">
+          All Orders
+        </Typography>
+
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: 2,
+            overflow: "hidden",
+            bgcolor: "#1E2939", // darker background for table
+          }}
+        >
+          <Table>
+            <TableHead sx={{ backgroundColor: "#333347" }}>
               <TableRow>
-                <TableCell align="center" colSpan={4}>
-                  Loading orders...
-                </TableCell>
+                <TableCell align="center" sx={{ color: "#f5f5f5" }}><strong>Buyer</strong></TableCell>
+                <TableCell align="center" sx={{ color: "#f5f5f5" }}><strong>NFT</strong></TableCell>
+                <TableCell align="center" sx={{ color: "#f5f5f5" }}><strong>Price</strong></TableCell>
+                <TableCell align="center" sx={{ color: "#f5f5f5" }}><strong>Status</strong></TableCell>
               </TableRow>
-            ) : orders.length > 0 ? (
-              orders.map((order) => (
-                <TableRow key={order._id}>
-                  <TableCell>{order.buyer?.username}</TableCell>
-                  <TableCell>{order.nft?.name}</TableCell>
-                  <TableCell>${order.nft?.price}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={order.status}
-                      onChange={(e) =>
-                        handleStatusChange(order._id, e.target.value)
-                      }
-                      size="small"
-                    >
-                      <MenuItem value="pending">Pending</MenuItem>
-                      <MenuItem value="confirmed">Confirmed</MenuItem>
-                      
-                      <MenuItem value="canceled">Canceled</MenuItem>
-                    </Select>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell align="center" colSpan={4} sx={{ color: "#bbb" }}>
+                    Loading orders...
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell align="center" colSpan={4}>
-                  No orders found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
+                  <TableRow
+                    key={order._id}
+                    hover
+                    sx={{
+                      "&:hover": { backgroundColor: "#3a3a4f" },
+                      transition: "background 0.2s ease",
+                    }}
+                  >
+                    <TableCell align="center" sx={{ color: "#ddd" }}>
+                      {order.buyer?.username}
+                    </TableCell>
+                    <TableCell align="center" sx={{ color: "#ddd" }}>
+                      {order.nft?.name}
+                    </TableCell>
+                    <TableCell align="center" sx={{ color: "#ddd" }}>
+                      ${order.nft?.price}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Select
+                        value={order.status}
+                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                        size="small"
+                        sx={{
+                          bgcolor: "#44445a",
+                          color: "#fff",
+                          "& .MuiSvgIcon-root": { color: "#bbb" },
+                        }}
+                      >
+                        <MenuItem value="pending">Pending</MenuItem>
+                        <MenuItem value="confirmed">Confirmed</MenuItem>
+                        <MenuItem value="canceled">Canceled</MenuItem>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell align="center" colSpan={4} sx={{ color: "#bbb" }}>
+                    No orders found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
 
       {/* Snackbar Toast */}
       <Snackbar
@@ -150,11 +180,12 @@ const Orders = () => {
           onClose={() => setToast({ ...toast, open: false })}
           severity={toast.type}
           variant="filled"
+          sx={{ borderRadius: 2 }}
         >
           {toast.message}
         </Alert>
       </Snackbar>
-    </div>
+    </Box>
   );
 };
 

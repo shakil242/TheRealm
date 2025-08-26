@@ -26,9 +26,9 @@ const fetchUsers = async () => {
   try {
     const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS));
 
-    // Filter users with role 'user' or 'moderator' and status 'active'
+    // Filter users with role 'user' or 'vendor' and status 'active'
     const filteredUsers = (res.data.users || []).filter(
-      (user) => (user.role === "user" || user.role === "moderator") && user.status === "active"
+      (user) => (user.role === "user" || user.role === "vendor") && user.status === "active"
     );
 
     setUsers(filteredUsers);
@@ -119,7 +119,7 @@ const fetchUsers = async () => {
                     size="small"
                   >
                     <MenuItem value="user">User</MenuItem>
-                    <MenuItem value="moderator">Moderator</MenuItem>
+                    <MenuItem value="vendor">vendor</MenuItem>
                   </Select>
                 </TableCell>
                 <TableCell>

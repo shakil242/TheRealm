@@ -16,8 +16,8 @@ export const API_ENDPOINTS = {
   GET_ALL_USERS: "/api/user/data",
   UPDATE_VENDOR: "/api/user/role/:id",
   UPDATE_STATUS: "/api/user/status/:userId",
-  DELETE_VENDOR: "/api/vendors/:id", // Admin approves/rejects moderators/users
-  REQUEST_MODERATOR:"/api/user/request-moderator",
+  DELETE_VENDOR: "/api/vendors/:id", // Admin approves/rejects vendors/users
+  REQUEST_vendor:"/api/user/request-vendor",
 
   // NFT endpoints
   ADD_NFT: "/api/nfts",           // Add NFT
