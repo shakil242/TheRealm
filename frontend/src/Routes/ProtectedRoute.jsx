@@ -1,14 +1,17 @@
+// src/routes/ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../Context/AuthContext";
+import { useSelector } from "react-redux";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { token, user } = useSelector((state) => state.auth);
 
-  if (loading) return <div>Loading...</div>;
+  // Not logged in
+  if (!token || !user) {
+    return <Navigate to="/" replace />;
+  }
 
-  if (!isAuthenticated) return <Navigate to="/" replace />;
-
+  // Role-based protection
   if (requiredRole && user.role !== requiredRole) {
     return <Navigate to="/" replace />;
   }
