@@ -53,7 +53,7 @@ import AllNFTsAdmin from "./scenes/allNFTs";
 
 
 // Auth
-import { AuthProvider } from "./Context/AuthContext";
+
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import BuyNow from "./pages/BuyNow";
 import VendorDashboard from "./pages/ModeratorDashboard";
@@ -61,7 +61,7 @@ import VendorDashboard from "./pages/ModeratorDashboard";
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      
         <Routes>
           {/* Public Layout */}
           <Route path="/" element={<Layout />}>
@@ -125,7 +125,7 @@ function App() {
           {/* Redirect unknown routes */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </AuthProvider>
+      
     </BrowserRouter>
   );
 }
