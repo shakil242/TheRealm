@@ -41,9 +41,10 @@ const MyNFTs = () => {
   const fetchNFTs = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      
       const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_MY_NFTS), {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials:true
+       
       });
       if (response.data.success) {
         const availableNFTs = response.data.nfts.filter(
@@ -67,9 +68,10 @@ const MyNFTs = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this NFT?")) return;
     try {
-      const token = localStorage.getItem("token");
+      
       const response = await axios.delete(buildApiUrl(`/api/nfts/${id}`), {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials:true
+       
       });
       if (response.data.success) {
         toast.success("NFT deleted successfully!");
@@ -105,7 +107,7 @@ const MyNFTs = () => {
 
   const handleUpdateNFT = async () => {
     try {
-      const token = localStorage.getItem("token");
+      
       const data = new FormData();
       data.append("name", formData.name);
       data.append("price", formData.price);
@@ -115,12 +117,14 @@ const MyNFTs = () => {
 
       const response = await axios.put(
         buildApiUrl(`/api/nfts/update-nft/${currentNFT._id}`),
+        
         data,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            
             "Content-Type": "multipart/form-data",
           },
+          withCredentials:true,
         }
       );
 
