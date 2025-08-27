@@ -3,7 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import logo1 from "../assets/home-images/1.png";
 import logo2 from "../assets/home-images/2.png";
 import Authentication from "./Authentication";
-import { useAuth } from "../Context/AuthContext"
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
+
+
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -11,9 +14,19 @@ const Navbar = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [expandedSubmenus, setExpandedSubmenus] = useState(new Set());
   const [authModalOpen, setAuthModalOpen] = useState(false);
+   const location = useLocation();
+  const isAuthenticated = useSelector((state) => !!state.auth.token);
+  const user = useSelector((state) => state.auth.user);
+   const dispatch = useDispatch();
 
-  const location = useLocation();
-  const { isAuthenticated, logout } = useAuth();
+
+
+  // logout clears localStorage
+   const handleLogout = () => {
+   dispatch(logout());
+};
+
+
 
   // Navigation data
   const navItems = [
@@ -235,12 +248,13 @@ const Navbar = () => {
                   />
                 </svg>
               </button>
-               <button
-        className="text-white px-4 py-2 rounded hover:bg-purple-600 transition"
-        onClick={isAuthenticated ? logout : handleAuthentication}
-      >
-        {isAuthenticated ? "Logout" : "Login"}
-      </button>
+             <button
+              className="text-white px-4 py-2 rounded hover:bg-purple-600 transition"
+              onClick={user ? handleLogout : handleAuthentication}
+               >
+                {user ? "Logout" : "Login"}
+              </button>
+
             </div>
           </div>
 

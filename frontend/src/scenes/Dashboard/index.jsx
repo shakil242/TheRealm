@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../Context/AuthContext";
 import { FaUserCircle, FaChartLine, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { logout } from "../../redux/authSlice";
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // ✅ Get user from Redux store
+  const { user } = useSelector((state) => state.auth);
 
   const [stats, setStats] = useState({
     users: 0,
@@ -16,9 +20,9 @@ const Dashboard = () => {
     reviews: 3,
   });
 
-  // Handle logout
+  // ✅ Logout via Redux
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate("/"); // Redirect to home
   };
 
@@ -26,7 +30,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get("/api/admin/stats"); // Your API endpoint
+        const response = await axios.get("/api/admin/stats", {
+          withCredentials: true,
+        });
         setStats((prev) => ({
           ...prev,
           users: response.data.users,
@@ -60,8 +66,12 @@ const Dashboard = () => {
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 flex items-center gap-6">
         <FaUserCircle className="text-8xl text-gray-400" />
         <div>
-          <h2 className="text-2xl font-semibold text-gray-800">{user?.username || "Guest"}</h2>
-          <p className="text-gray-500 mt-1">{user?.email || "No email provided"}</p>
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {user?.username || "Guest"}
+          </h2>
+          <p className="text-gray-500 mt-1">
+            {user?.email || "No email provided"}
+          </p>
         </div>
       </div>
 
@@ -74,7 +84,7 @@ const Dashboard = () => {
         </div>
         <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
           <FaChartLine className="text-4xl text-green-500 mb-2" />
-          <h3 className="text-xl font-semibold text-gray-800">vendors</h3>
+          <h3 className="text-xl font-semibold text-gray-800">Vendors</h3>
           <p className="text-gray-500 mt-1 text-lg">{stats.vendors}</p>
         </div>
         <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center">
