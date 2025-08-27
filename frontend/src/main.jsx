@@ -1,14 +1,17 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App.jsx';
-import { AuthProvider } from './Context/AuthContext';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
 
-createRoot(document.getElementById('root')).render(
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { Provider } from "react-redux";   // ✅ import Provider
+import { store } from "./redux/store";    // ✅ import store
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
+    <Provider store={store}>   {/* ✅ wrap App with Provider */}
       <App />
       <ToastContainer
         position="top-right"
@@ -21,6 +24,6 @@ createRoot(document.getElementById('root')).render(
         draggable
         pauseOnHover
       />
-    </AuthProvider>
-  </StrictMode>,
+    </Provider>
+  </StrictMode>
 );
