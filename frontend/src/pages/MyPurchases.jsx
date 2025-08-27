@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../Context/AuthContext";
 import { buildApiUrl, API_ENDPOINTS } from "../config/api";
 import axios from "axios";
 import {
@@ -7,9 +6,12 @@ import {
   TableRow, Paper, Button, Chip, Avatar, Snackbar, Alert, Dialog, DialogTitle,
   DialogContent, DialogActions, TextField,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const Purchases = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { token, user } = useSelector((state) => state.auth);
+  const isAuthenticated = !!token;
+
   const [orders, setOrders] = useState([]);
   const [toast, setToast] = useState({ open: false, message: "", type: "success" });
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -18,77 +20,82 @@ const Purchases = () => {
   const [resalePrice, setResalePrice] = useState("");
   const [resaleQuantity, setResaleQuantity] = useState(1);
 
- useEffect(() => {
-  const fetchOrders = async () => {
-    if (!isAuthenticated) return;
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(buildApiUrl(API_ENDPOINTS.MY_ORDERS), {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (res.data.success) {
-        // Only include orders that have nft populated
-        const validOrders = res.data.orders.filter(order => order.nft && order.nft._id);
-
-        // Aggregate orders by NFT ID
-        const aggregated = {};
-        validOrders.forEach(order => {
-          const nftId = order.nft._id;
-          if (aggregated[nftId]) {
-            aggregated[nftId].quantity += order.quantity;
-            if (new Date(order.createdAt) > new Date(aggregated[nftId].createdAt)) {
-              aggregated[nftId].createdAt = order.createdAt;
-            }
-            if (order.status === "pending") aggregated[nftId].status = "pending";
-          } else {
-            aggregated[nftId] = {
-              nft: { _id: order.nft._id, ...order.nft },
-              quantity: order.quantity,
-              status: order.status,
-              createdAt: order.createdAt,
-            };
-          }
+  // 🔹 Fetch orders
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!isAuthenticated) return;
+      try {
+        const res = await axios.get(buildApiUrl(API_ENDPOINTS.MY_ORDERS), {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-      const filteredAggregated = Object.values(aggregated).filter(o => {
-  // Show if pending (user is still buying) OR confirmed and not listed for resale
-  return o.status === "pending" || (o.status === "confirmed" && !o.nft.isListed);
-});
+        if (res.data.success) {
+          const validOrders = res.data.orders.filter(order => order.nft && order.nft._id);
 
+          // Aggregate orders by NFT ID
+          const aggregated = {};
+          validOrders.forEach(order => {
+            const nftId = order.nft._id;
+            if (aggregated[nftId]) {
+              aggregated[nftId].quantity += order.quantity;
+              if (new Date(order.createdAt) > new Date(aggregated[nftId].createdAt)) {
+                aggregated[nftId].createdAt = order.createdAt;
+              }
+              if (order.status === "pending") aggregated[nftId].status = "pending";
+            } else {
+              aggregated[nftId] = {
+                nft: { _id: order.nft._id, ...order.nft },
+                quantity: order.quantity,
+                status: order.status,
+                createdAt: order.createdAt,
+              };
+            }
+          });
 
-        setOrders(filteredAggregated);
+          const filteredAggregated = Object.values(aggregated).filter(o =>
+            o.status === "pending" || (o.status === "confirmed" && !o.nft.isListed)
+          );
+
+          setOrders(filteredAggregated);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
       }
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    }
-  };
+    };
 
-  fetchOrders();
-}, [isAuthenticated]);
+    fetchOrders();
+  }, [isAuthenticated, token]);
 
-
-  const handleRequestvendor = async () => {
+  // 🔹 Handle request to become vendor
+  const handleRequestVendor = async () => {
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.put(buildApiUrl(API_ENDPOINTS.REQUEST_vendor), {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setToast({ open: true, message: res.data.message || "Request sent", type: res.data.success ? "success" : "error" });
+      setToast({
+        open: true,
+        message: res.data.message || "Request sent",
+        type: res.data.success ? "success" : "error"
+      });
     } catch (err) {
-      setToast({ open: true, message: err.response?.data?.message || "Error", type: "error" });
+      setToast({
+        open: true,
+        message: err.response?.data?.message || "Error",
+        type: "error"
+      });
     } finally {
       setDialogOpen(false);
     }
   };
 
+  // 🔹 Open resale dialog
   const openResaleDialog = (order) => {
     if (!order.nft?._id) {
       setToast({ open: true, message: "NFT ID not found", type: "error" });
       return;
     }
-    if (user.role !== "vendor") {
+    if (user?.role !== "vendor") {
       setDialogOpen(true);
       return;
     }
@@ -98,6 +105,7 @@ const Purchases = () => {
     setResaleDialogOpen(true);
   };
 
+  // 🔹 Confirm resale
   const handleResale = async () => {
     if (!resalePrice || resalePrice <= 0) {
       setToast({ open: true, message: "Invalid price.", type: "error" });
@@ -109,7 +117,6 @@ const Purchases = () => {
     }
 
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.put(
         buildApiUrl(API_ENDPOINTS.NFT_RESELL.replace(":nftId", selectedOrder.nft._id)),
         {
@@ -133,10 +140,18 @@ const Purchases = () => {
         setToast({ open: true, message: "NFT listed for resale!", type: "success" });
         setResaleDialogOpen(false);
       } else {
-        setToast({ open: true, message: res.data.message || "Failed to list NFT.", type: "error" });
+        setToast({
+          open: true,
+          message: res.data.message || "Failed to list NFT.",
+          type: "error"
+        });
       }
     } catch (error) {
-      setToast({ open: true, message: error.response?.data?.message || "Error listing NFT", type: "error" });
+      setToast({
+        open: true,
+        message: error.response?.data?.message || "Error listing NFT",
+        type: "error"
+      });
     }
   };
 
@@ -152,7 +167,9 @@ const Purchases = () => {
         </Typography>
 
         {orders.length === 0 ? (
-          <Typography color="text.secondary" textAlign="center">You haven’t bought any NFTs yet.</Typography>
+          <Typography color="text.secondary" textAlign="center">
+            You haven’t bought any NFTs yet.
+          </Typography>
         ) : (
           <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
             <Table>
@@ -174,7 +191,11 @@ const Purchases = () => {
                       <TableCell>
                         <Avatar
                           variant="rounded"
-                          src={order.nft.image ? buildApiUrl(`/uploads/${order.nft.image}`) : "https://via.placeholder.com/80"}
+                          src={
+                            order.nft.image
+                              ? buildApiUrl(`/uploads/${order.nft.image}`)
+                              : "https://via.placeholder.com/80"
+                          }
                           alt={order.nft.name}
                           sx={{ width: 56, height: 56 }}
                         />
@@ -203,7 +224,9 @@ const Purchases = () => {
                             Put on Sale
                           </Button>
                         ) : (
-                          <Typography variant="body2" color="text.secondary">Pending</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Pending
+                          </Typography>
                         )}
                       </TableCell>
                     </TableRow>
@@ -220,50 +243,50 @@ const Purchases = () => {
         <DialogTitle>Resale Not Allowed</DialogTitle>
         <DialogContent>
           <Typography mb={2}>Become a vendor to resale your NFTs.</Typography>
-          <Button variant="contained" color="primary" onClick={handleRequestvendor}>Request vendor</Button>
+          <Button variant="contained" color="primary" onClick={handleRequestVendor}>
+            Request vendor
+          </Button>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)} color="secondary">Close</Button>
         </DialogActions>
       </Dialog>
 
-     {/* Resale dialog */}
-<Dialog
-  open={resaleDialogOpen}
-  onClose={() => setResaleDialogOpen(false)}
-  maxWidth="xs" // expands max width
-  fullWidth // let it stretch across available space
-  PaperProps={{
-    sx: {
-      minHeight: "300px", // increase height
-      minWidth: "300px",  // increase width
-      borderRadius: 3,    // rounded corners
-      p: 3,               // padding inside
-    },
-  }}
->
-  <DialogTitle>Put NFT on Sale</DialogTitle>
-  <DialogContent>
-    <TextField
-      label="Resale Price"
-      type="number"
-      fullWidth
-      value={resalePrice}
-      onChange={(e) => setResalePrice(e.target.value)}
-      sx={{ mt: 2 }}
-    />
-    
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={() => setResaleDialogOpen(false)} color="secondary">
-      Cancel
-    </Button>
-    <Button onClick={handleResale} variant="contained" color="primary">
-      Confirm
-    </Button>
-  </DialogActions>
-</Dialog>
-
+      {/* Resale dialog */}
+      <Dialog
+        open={resaleDialogOpen}
+        onClose={() => setResaleDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            minHeight: "300px",
+            minWidth: "300px",
+            borderRadius: 3,
+            p: 3,
+          },
+        }}
+      >
+        <DialogTitle>Put NFT on Sale</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Resale Price"
+            type="number"
+            fullWidth
+            value={resalePrice}
+            onChange={(e) => setResalePrice(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResaleDialogOpen(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleResale} variant="contained" color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={toast.open}
