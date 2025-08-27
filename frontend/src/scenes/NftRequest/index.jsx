@@ -25,9 +25,9 @@ const PendingNFTsAdmin = () => {
   const fetchPendingNFTs = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      
       const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_NFTS), {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials:true
       });
 
       if (res.data.success) {
@@ -48,7 +48,7 @@ const PendingNFTsAdmin = () => {
   // Update NFT status
 const updateStatus = async (id, status) => {
   try {
-    const token = localStorage.getItem("token");
+  
 
     // replace :id in endpoint
     const url = API_ENDPOINTS.UPDATE_NFT_STATUS.replace(":id", id);
@@ -56,7 +56,7 @@ const updateStatus = async (id, status) => {
     const res = await axios.put(
       buildApiUrl(url),
       { status },
-      { headers: { Authorization: `Bearer ${token}` } }
+      {withCredentials:true}
     );
 
     if (res.data.success) {
