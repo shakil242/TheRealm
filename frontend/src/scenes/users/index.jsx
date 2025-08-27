@@ -24,7 +24,8 @@ const Users = () => {
  // Fetch all users from backend
 const fetchUsers = async () => {
   try {
-    const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS));
+    const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS),{withCredentials:true});
+    
 
     // Filter users with role 'user' or 'vendor' and status 'active'
     const filteredUsers = (res.data.users || []).filter(
@@ -48,7 +49,8 @@ const fetchUsers = async () => {
     try {
       const res = await axios.put(
         buildApiUrl(API_ENDPOINTS.UPDATE_VENDOR.replace(":id", userId)),
-        { role: newRole }
+        { role: newRole },
+        {withCredentials:true}
       );
 
       if (res.data.success) {
