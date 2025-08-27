@@ -21,7 +21,7 @@ const vendorRequests = () => {
   // Fetch pending vendor requests
   const fetchRequests = async () => {
     try {
-      const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS)); // get all users
+      const res = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_USERS),{withCredentials:true}); // get all users
       const pendingMods = res.data.users.filter(
        (user) => ["vendor", "user"].includes(user.role) && user.status === "pending"
 
@@ -42,8 +42,9 @@ const vendorRequests = () => {
   const approvevendor = async (userId) => {
     try {
       const res = await axios.put(
-        buildApiUrl(API_ENDPOINTS.UPDATE_STATUS.replace(":userId", userId)),
-        { status: "active" }
+        buildApiUrl(API_ENDPOINTS.UPDATE_STATUS.replace(":userId", userId),),
+        { status: "active" },
+        {withCredentials:true}
       );
 
       if (res.data.success) {
