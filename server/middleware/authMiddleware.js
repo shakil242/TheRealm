@@ -1,37 +1,19 @@
 import jwt from 'jsonwebtoken';
 import User from '../model/user.js';
 
+
 // Protect routes - verify JWT token
 export const protect = async (req, res, next) => {
   let token;
 
-  // Check for token in headers
+  // 1️⃣ First check header
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      // Get token from header
-      token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(' ')[1];
+  }
 
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Get user from token
-      req.user = await User.findById(decoded.id).select('-password');
-
-      if (!req.user) {
-        return res.status(401).json({
-          success: false,
-          error: 'User not found'
-        });
-      }
-
-      next();
-    } catch (error) {
-      console.error('Token verification error:', error);
-      return res.status(401).json({
-        success: false,
-        error: 'Not authorized, token failed'
-      });
-    }
+  // 2️⃣ If not in header, check cookies
+  else if (req.cookies && req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -40,16 +22,37 @@ export const protect = async (req, res, next) => {
       error: 'Not authorized, no token'
     });
   }
-};
 
-// Admin middleware
-export const admin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = await User.findById(decoded.id).select('-password');
+
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
     next();
-  } else {
-    return res.status(403).json({
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return res.status(401).json({
       success: false,
-      error: 'Not authorized as admin'
+      error: 'Not authorized, token failed'
     });
   }
 };
+
+
+// Admin middleware
+export const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+    next();
+  };
+};
+
