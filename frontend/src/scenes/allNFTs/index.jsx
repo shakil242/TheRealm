@@ -25,9 +25,9 @@ const AllNFTsAdmin = () => {
   const fetchNFTs = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
+      
       const res = await axios.get(buildApiUrl("/api/nfts/all"), {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials:true
       });
 
       if (res.data.success) {
@@ -44,11 +44,11 @@ const AllNFTsAdmin = () => {
 
   const updateStatus = async (id, status) => {
     try {
-      const token = localStorage.getItem("token");
+     
       const res = await axios.put(
         buildApiUrl(`/api/nfts/${id}/status`),
         { status },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {withCredentials:true}
       );
 
       if (res.data.success) {
