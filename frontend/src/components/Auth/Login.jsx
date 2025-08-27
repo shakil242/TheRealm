@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useAuth } from "../../Context/AuthContext";
+import { buildApiUrl, API_ENDPOINTS } from "../../config/api";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../redux/authSlice"; // only store user info
+import { Token } from "@mui/icons-material";
 
 const Login = ({ onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,8 +17,8 @@ const Login = ({ onClose }) => {
     rememberMe: false,
   });
 
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,40 +32,56 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   setIsLoading(true);
 
+  if (!formData.email || !formData.password) {
+    toast.error("Please fill in all fields", { autoClose: 3000 });
+    setIsLoading(false);
+    return;
+  }
+
   try {
-    const result = await login(formData.email, formData.password);
-
-    if (result.success) {
-      toast.success("Login successful!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-      });
-
-      const userRole = result.user?.role;
-      const userStatus = result.user?.status; // check vendor status
-
-      // Redirect based on role and status
-      if (userRole === "admin") {
-        navigate("/dashboard"); // admin dashboard
-      } else if (userRole === "vendor") {
-        if (userStatus === "pending") {
-          toast.info("Your vendor request is still pending.");
-          navigate("/profile"); // redirect to homepage instead
-        } else {
-          navigate("/vendor-dashboard"); // vendor approved
-        }
-      } else {
-        navigate("/"); // regular user homepage
+    const res = await axios.post(
+      buildApiUrl(API_ENDPOINTS.LOGIN),
+      {
+        email: formData.email,
+        password: formData.password,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true, // important for cookie auth
       }
+    );
+
+    const data = res.data; // store response in data
+    const user = data.user;
+    const token=data.token
+
+    if (user && token) {
+      // Only store user info in Redux (token not needed for cookie-based auth)
+      dispatch(setCredentials({ user, token }));
+
+      toast.success("Login successful!", { autoClose: 3000 });
+
+      // Role-based redirection
+      if (user.role === "admin") navigate("/dashboard");
+      else if (user.role === "vendor") {
+        if (user.status === "pending") {
+          toast.info("Your vendor request is still pending.", {
+            autoClose: 3000,
+          });
+          navigate("/profile");
+        } else navigate("/vendor-dashboard");
+      } else navigate("/");
 
       if (onClose) onClose();
     } else {
-      toast.error(result.error || "Login failed");
+      toast.error("Login failed", { autoClose: 3000 });
     }
   } catch (error) {
-    toast.error(error.message || "An error occurred during login");
+    toast.error(
+      error.response?.data?.error || "An error occurred during login",
+      { autoClose: 5000 }
+    );
+    console.error("Login error:", error);
   } finally {
     setIsLoading(false);
   }
@@ -71,32 +91,27 @@ const handleSubmit = async (e) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <ToastContainer />
-
       {/* Email Field */}
-      <div>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-3 bg-gray-800 border border-purple-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          placeholder="Enter your email"
-        />
-      </div>
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+        placeholder="Enter your email"
+        className="w-full px-4 py-3 bg-gray-800 border border-purple-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+      />
 
       {/* Password Field */}
       <div className="relative">
         <input
           type={showPassword ? "text" : "password"}
-          id="password"
           name="password"
           value={formData.password}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 bg-gray-800 border border-purple-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-12"
           placeholder="Enter your password"
+          className="w-full px-4 py-3 bg-gray-800 border border-purple-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 pr-12"
         />
         <button
           type="button"
@@ -112,15 +127,12 @@ const handleSubmit = async (e) => {
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
-            id="rememberMe"
             name="rememberMe"
             checked={formData.rememberMe}
             onChange={handleChange}
             className="w-4 h-4 text-purple-600 bg-gray-800 border-gray-600 rounded focus:ring-purple-500 focus:ring-2"
           />
-          <label htmlFor="rememberMe" className="text-sm text-gray-300">
-            Remember me
-          </label>
+          <label className="text-sm text-gray-300">Remember me</label>
         </div>
         <button
           type="button"

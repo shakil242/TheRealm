@@ -1,31 +1,32 @@
+// src/pages/Shop.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_ENDPOINTS, buildApiUrl } from "../config/api";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../Context/AuthContext";
 
 const Shop = () => {
-  const { user, isAuthenticated } = useAuth();
   const [nfts, setNFTs] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch all available NFTs
   const fetchAllNFTs = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_NFTS));
+      const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_NFTS), {
+        withCredentials: true, // ensure cookies are sent
+      });
+
       if (response.data.success) {
-        const vendorNFTs = response.data.nfts.filter(
-          (nft) =>
-            nft.status === "available" 
-        );
-        setNFTs(vendorNFTs);
+        const availableNFTs = response.data.nfts.filter((nft) => nft.status === "available");
+        setNFTs(availableNFTs);
       } else {
         toast.error(response.data.error || "Failed to load NFTs");
       }
     } catch (error) {
+      console.error("Fetch NFTs error:", error);
       toast.error("Server error. Try again!");
     } finally {
       setLoading(false);
@@ -36,23 +37,20 @@ const Shop = () => {
     fetchAllNFTs();
   }, []);
 
-
-
   return (
-    <div className="min-h-screen px-12 py-10 bg-black text-gray-100">
+    <div className="min-h-screen px-6 md:px-12 py-10 bg-black text-gray-100">
+      {/* Heading */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-wide text-white uppercase">
-          Marketplace
-        </h1>
+        <h1 className="text-4xl font-bold tracking-wide text-white uppercase">Marketplace</h1>
         <p className="text-gray-500 mt-2 text-sm">
-          Browse exclusive NFTs from vendors
+          Browse exclusive NFTs from verified vendors
         </p>
       </div>
 
-      <div className="flex justify-between items-center mb-10 text-gray-400 text-sm border-b border-gray-800 pb-3">
+      {/* Controls */}
+      <div className="flex justify-between items-center mb-8 text-gray-400 text-sm border-b border-gray-800 pb-3">
         <p>
-          Showing{" "}
-          <span className="text-white font-semibold">{nfts.length}</span> items
+          Showing <span className="text-white font-semibold">{nfts.length}</span> items
         </p>
         <select className="bg-black border border-gray-700 px-3 py-1 text-gray-300 uppercase text-xs tracking-wider focus:outline-none">
           <option>Default</option>
@@ -61,27 +59,32 @@ const Shop = () => {
         </select>
       </div>
 
+      {/* NFT Grid */}
       {loading ? (
         <p className="text-center text-gray-500">Loading NFTs...</p>
       ) : nfts.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No NFTs available from vendors.
-        </p>
+        <p className="text-center text-gray-500">No NFTs available from vendors.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {nfts.map((nft) => (
             <div
               key={nft._id}
-              className="bg-neutral-900 border border-gray-800 shadow-lg hover:shadow-purple-700/20 transition transform hover:-translate-y-1 overflow-hidden"
+              className="bg-neutral-900 border border-gray-800 shadow-lg hover:shadow-purple-700/30 transition transform hover:-translate-y-1 overflow-hidden rounded-lg"
             >
-              <div className="w-full flex items-center justify-center bg-black border-b border-gray-800">
+              {/* NFT Image */}
+              <div className="w-full h-48 flex items-center justify-center bg-black border-b border-gray-800 overflow-hidden">
                 <img
-                  src={`http://localhost:5001/uploads/${nft.image}`}
+                  src={
+                    nft.image
+                      ? `http://localhost:5001/uploads/${nft.image}`
+                      : "https://via.placeholder.com/200"
+                  }
                   alt={nft.name}
-                  className="max-h-full max-w-full object-cover"
+                  className="object-cover w-full h-full"
                 />
               </div>
 
+              {/* NFT Info */}
               <div className="p-5 flex flex-col items-start w-full">
                 <div className="flex justify-between items-center w-full">
                   <h2 className="font-semibold text-base text-white uppercase tracking-wide truncate">
@@ -92,15 +95,12 @@ const Shop = () => {
                   </p>
                 </div>
 
-               
-                  <button
-                    onClick={() => navigate(`/nft/${nft._id}`)}
-                    className="mt-5 w-full cursor-pointer py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm uppercase tracking-wider transition shadow-sm hover:shadow-lg"
-                  >
-                    BUY NOW
-                  </button>
-                
-              
+                <button
+                  onClick={() => navigate(`/nft/${nft._id}`)}
+                  className="mt-5 w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm uppercase tracking-wider transition shadow-sm hover:shadow-lg rounded-md"
+                >
+                  BUY NOW
+                </button>
               </div>
             </div>
           ))}
