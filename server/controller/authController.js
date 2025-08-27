@@ -1,254 +1,145 @@
 import User from "../model/user.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
-const generateToken = (res, userId) => {
-  // Ensure JWT_SECRET is available
-  if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET environment variable is not set");
-  }
+// Generate JWT and store in HTTP-only cookie
+const generateToken = (res, user) => {
+  const expiresIn = "1d";
+  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn });
 
-  // Set a proper default for expiresIn
-  const expiresIn = process.env.JWT_EXPIRES_IN || "24h";
-  
-  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: expiresIn,
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    secure: false, // true in production
+    sameSite: "strict",
+    maxAge: 24 * 60 * 60 * 1000,
   });
+
   return token;
 };
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
+// @desc Register user
 export const registerUser = async (req, res) => {
   try {
-    console.log("Registration request body:", req.body);
     const { username, email, password, role } = req.body;
+    if (!username || !email || !password || !role)
+      return res.status(400).json({ success: false, error: "Please include all fields" });
 
-    // Validation
-    if (!username || !email || !password || !role) {
-      console.log("Missing fields:", { username: !!username, email: !!email, password: !!password, role: !!role });
-      return res.status(400).json({
-        success: false,
-        error: "Please include all fields",
-      });
-    }
-
-    // Check if user exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      console.log("User already exists:", { 
-        existingEmail: existingUser.email, 
-        existingUsername: existingUser.username,
-        requestedEmail: email,
-        requestedUsername: username
-      });
-      
-      let errorMessage = "Registration failed";
-      if (existingUser.email === email) {
-        errorMessage = "Email already in use";
-      } else if (existingUser.username === username) {
-        errorMessage = "Username already taken";
-      }
-      
-      return res.status(400).json({
-        success: false,
-        error: errorMessage,
-      });
+      const message = existingUser.email === email ? "Email already in use" : "Username already taken";
+      return res.status(400).json({ success: false, error: message });
     }
 
-    // Create user
+    // Hash password in controller
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const user = new User({
-       username, 
-       email, 
-       password, 
-       role,
-       status: role === "vendor" ? "pending" : "active",  });
+      username,
+      email,
+      password: hashedPassword,
+      role,
+      status: role === "vendor" ? "pending" : "active",
+    });
+
     await user.save();
 
-    // Generate token and send response
-    const token = generateToken(res, user._id);
+    generateToken(res, user);
+
     const userResponse = user.toObject();
     delete userResponse.password;
 
-    res.status(201).json({
-      success: true,
-      token,
-      user: userResponse,
-    });
+    res.status(201).json({ success: true, message: "User registered successfully", user: userResponse });
   } catch (err) {
-    console.error("Registration error:", err);
-    res.status(500).json({
-      success: false,
-      error: err.message || "Registration failed",
-    });
+    res.status(500).json({ success: false, error: err.message || "Registration failed" });
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
+// @desc Login user
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).json({ success: false, error: "Please include email and password" });
 
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        error: "Please include email and password",
-      });
-    }
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ success: false, error: "Invalid credentials" });
 
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: "Invalid credentials",
-      });
-    }
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ success: false, error: "Invalid credentials" });
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        error: "Invalid credentials",
-      });
-    }
-
-    const token = generateToken(res, user._id);
+    // Generate token
+    const token = generateToken(res, user); // make generateToken return token
 
     const userResponse = user.toObject();
     delete userResponse.password;
 
-    // Include status inside user object
-    userResponse.status = user.status || "active";
-
-    res.json({
-      success: true,
-      token,
-      user: userResponse,
-    });
+    // Send token in response as well
+    res.json({ success: true, message: "Logged in successfully", user: userResponse, token });
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({
-      success: false,
-      error: err.message || "Login failed",
-    });
+    res.status(500).json({ success: false, error: err.message || "Login failed" });
   }
 };
 
 
-
-
-// @desc    Logout user / clear cookie
-// @route   POST /api/auth/logout
-// @access  Private
+// @desc Logout user
 export const logoutUser = (req, res) => {
-  res.cookie("token", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
+  res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
-// @desc    Get user profile
-// @route   GET /api/auth/me
-// @access  Private
+// @desc Get user profile
 export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "User not found",
-      });
-    }
+    if (!user) return res.status(404).json({ success: false, error: "User not found" });
+
     res.json({ success: true, user });
   } catch (err) {
-    console.error("Profile error:", err);
-    res.status(500).json({
-      success: false,
-      error: "Server error",
-    });
+    res.status(500).json({ success: false, error: "Server error" });
   }
 };
 
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
+// @desc Update user profile
 export const updateUserProfile = async (req, res) => {
   try {
     const { username, email, currentPassword, newPassword } = req.body;
-    const user = await User.findById(req.user.id).select("+password");
+    const user = await User.findById(req.user.id);
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "User not found",
-      });
-    }
+    if (!user) return res.status(404).json({ success: false, error: "User not found" });
 
-    // Check if username or email already exists (excluding current user)
+    // Check unique username/email
     if (username && username !== user.username) {
-      const existingUser = await User.findOne({ username });
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          error: "Username already taken",
-        });
-      }
+      const exists = await User.findOne({ username });
+      if (exists) return res.status(400).json({ success: false, error: "Username already taken" });
+      user.username = username;
     }
 
     if (email && email !== user.email) {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          error: "Email already in use",
-        });
-      }
+      const exists = await User.findOne({ email });
+      if (exists) return res.status(400).json({ success: false, error: "Email already in use" });
+      user.email = email;
     }
-
-    // Update basic fields
-    if (username) user.username = username;
-    if (email) user.email = email;
 
     // Handle password change
     if (newPassword) {
-      if (!currentPassword) {
-        return res.status(400).json({
-          success: false,
-          error: "Current password is required to change password",
-        });
-      }
+      if (!currentPassword) return res.status(400).json({ success: false, error: "Current password required" });
 
-      // Verify current password
-      const isMatch = await user.comparePassword(currentPassword);
-      if (!isMatch) {
-        return res.status(400).json({
-          success: false,
-          error: "Current password is incorrect",
-        });
-      }
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) return res.status(400).json({ success: false, error: "Current password is incorrect" });
 
-      user.password = newPassword;
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(newPassword, salt);
     }
 
     await user.save();
 
-    // Send response without password
     const userResponse = user.toObject();
     delete userResponse.password;
 
-    res.json({
-      success: true,
-      message: "Profile updated successfully",
-      user: userResponse,
-    });
+    res.json({ success: true, message: "Profile updated successfully", user: userResponse });
   } catch (err) {
-    console.error("Profile update error:", err);
-    res.status(500).json({
-      success: false,
-      error: err.message || "Profile update failed",
-    });
+    res.status(500).json({ success: false, error: err.message || "Profile update failed" });
   }
 };

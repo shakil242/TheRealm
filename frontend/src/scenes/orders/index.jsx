@@ -24,11 +24,11 @@ function OrdersPage() {
   const fetchAllOrders = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return toast.error("Unauthorized. Token missing!");
+    
+     
 
       const response = await axios.get(buildApiUrl(API_ENDPOINTS.GET_ALL_ORDERS), {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials:true
       });
 
       if (response.data.success) setOrders(response.data.orders);
