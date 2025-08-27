@@ -1,26 +1,24 @@
 // src/pages/Profile.jsx
-import React, { useState, useEffect } from "react";
-import Authentication from "../components/Authentication";
-import { useAuth } from "../Context/AuthContext";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
+import Authentication from "../components/Authentication";
 
 const Profile = () => {
-  const { user, isAuthenticated, loading, logout, refreshUser } = useAuth();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    refreshUser();
-  }, []);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
+  // Logout function (Redux only)
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate("/");
   };
 
-  if (loading) return <div className="text-center text-gray-700">Loading profile...</div>;
-
-  if (!isAuthenticated) {
+  if (!user) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-center px-4">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">You are not logged in</h2>
@@ -64,7 +62,7 @@ const Profile = () => {
           {/* Pending Vendor Dialog */}
           {user?.role === "vendor" && user?.status === "pending" && (
             <div className="mx-6 mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
-              Your request to become a moderator is still pending.
+              Your request to become a vendor is still pending.
             </div>
           )}
 
@@ -77,7 +75,7 @@ const Profile = () => {
               Settings
             </button>
 
-            {/* My Purchases Button */}
+            {/* My Purchases */}
             <Link
               to="/purchases"
               className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition transform hover:scale-105 text-center"
@@ -85,7 +83,7 @@ const Profile = () => {
               My Purchases
             </Link>
 
-            {/* Dashboard Button (for vendor/admin only) */}
+            {/* Dashboard Button */}
             {["vendor", "admin"].includes(user?.role) && user?.status !== "pending" && (
               <Link
                 to={user?.role === "admin" ? "/dashboard" : "/vendor-dashboard"}
